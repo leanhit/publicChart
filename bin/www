@@ -100,6 +100,34 @@ const io = require('socket.io')(server, {
 
 io.on('connection', (client) => {
   console.log('a user connected');
+
+
+  client.on('userLogin', (loginInfo)=>{
+    
+    client.emit('userLoginResult', true);
+    
+    console.log(loginInfo.username);
+    console.log(loginInfo.password);
+
+  })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   client.on('disconnect', () => {
     console.log('user disconnected');
   });

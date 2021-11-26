@@ -1,0 +1,8 @@
+Dư án này tôi muốn xây dựng một web với các chức năng quản lý, thống kê dữ liệu người dùng và hiển thị dưới dạng biểu đồ. Đặc biệt nhất là người dùng không cần hiểu biết vè cơ sở dữ liệu, phân chia bảng, chỉ cần nhét dữ liệu vào bấm nút sẽ phi ra biểu đồ
+Các tính năng:
+- Đăng ký, đăng nhập
+- Nhập dữ liệu
+- Lưu dữ liệu vào database
+- Lấy dữ liệu ra
+- Fomrmat datum follow some type
+- Vẽ biểu đồ

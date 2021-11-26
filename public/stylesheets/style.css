@@ -6,3 +6,13 @@ body {
 a {
   color: #00B7FF;
 }
+
+
+#divLogin{
+  margin: auto;
+  width: 280px;
+}
+
+#divLogin > table{
+  margin: auto;
+}

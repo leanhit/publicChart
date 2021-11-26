@@ -4,12 +4,38 @@
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+
     <script src="/socket.io/socket.io.js"></script>
+
+    <script src="/javascripts/client/lib.js"></script>
+    <script src="/javascripts/client/index.js"></script>
     
-    <script src="/javascripts/index.js"></script>
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <div id="divLogin"  >
+      <table>
+        <tr>
+          <td><label>Username</label></td>
+          <td><input type="text" id="inUsername" placeholder="Username"></td>
+        </tr>
+        <tr>
+          <td><label>Password</label></td>
+          <td><input type="password" id="inPassword" placeholder="Password"></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <label>Remember me</label>
+            <input type="checkbox" id="cbRememberMe" checked>
+            <button id="btnLogin" onclick="login()">Login</button>
+          </td>
+        </tr>
+      </table>
+      
+    </div> 
+
+
+
+
   </body>
 </html>
