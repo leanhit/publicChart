@@ -9,6 +9,7 @@ a {
 
 
 #divLogin{
+  display: none;
   margin: auto;
   width: 280px;
 }

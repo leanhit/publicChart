@@ -91,6 +91,14 @@ function onListening() {
 
 
 //-----------------new code for server --------------------
+const MongoClient = require('mongodb').MongoClient;
+const bcrypt = require('bcrypt');
+
+var jwToken = require('../public/javascripts/server/jwToken.js');
+var defineVal = require('../public/javascripts/server/defineValue.js');
+const { info } = require('console');
+
+
 
 const io = require('socket.io')(server, {
   cors: {
@@ -98,32 +106,119 @@ const io = require('socket.io')(server, {
   }
 });
 
+
 io.on('connection', (client) => {
   console.log('a user connected');
 
+   //get login by jsonwebtoken
+   client.on('userLoginJwt', function(token){
+    var decodedToken = jwToken.decodeToken(token);
+    let isDecodeTokenOk = true;
+
+    decodedToken.catch((err) => {
+      client.emit('userLoginResult', defineVal.jwtExpired);
+      isDecodeTokenOk = false;
+    }).then((decoded) => {
+      if(isDecodeTokenOk)
+        client.emit('userLoginResult', defineVal.validResult); 
+        console.log(decoded.username + " is login via token"); 
+      });
+  });
 
   client.on('userLogin', (loginInfo)=>{
-    
-    client.emit('userLoginResult', true);
-    
-    console.log(loginInfo.username);
-    console.log(loginInfo.password);
+    const usname = loginInfo.username;
+    let isDecodeTokenOk = true;
 
-  })
+    let userRefreshToken = jwToken.getRefreshToken(usname);
+    userRefreshToken.catch((err) => {
+      console.log("error load refresh token");
+      console.log(err);
+    }).then((refreshToken) =>{
+      
+      if(refreshToken){       
+        let objRefreshToken = jwToken.decodeRefreshToken(refreshToken);
+        objRefreshToken.catch((err) => {
+          console.log("Decode refresh token is failt");
+          loginViaDatabase(loginInfo);
+          isDecodeTokenOk = false;
+        }).then((jsonToken) =>{          
+          if(isDecodeTokenOk){
+              //valid username
+            if(loginInfo.username === jsonToken.username){
+              //valid password
+              if(loginInfo.password === jsonToken.password){
+                console.log(loginInfo.username + " is login via refresh token");
+                client.emit('userLoginResult', defineVal.validResult);
+
+                createToken(loginInfo.username);
+              }else{//invalid password
+                client.emit('userLoginResult', defineVal.loginInvalidPassword);
+              }
+            }else{//invalid username
+              client.emit('userLoginResult', defineVal.loginInvalidUsername);
+            }
+          }
+          
+        });      
+      }else{
+        loginViaDatabase(loginInfo);
+      }
 
 
+    })
 
+  });
 
+function loginViaDatabase(loginInfo){
+  const username = loginInfo.username;
+  const psw = loginInfo.password;
 
+  MongoClient.connect(defineVal.baseUrl, function(err, db){
+      if (err) {
+          throw err;
+      } else {                    
+        var dbo = db.db(defineVal.dbAllUser);
+        dbo.collection(defineVal.userColection).findOne({username: username}, function(err, user){                  
+          if (err) {
+              throw err;
+          } else {
+              if (user == null) {                      
+                //result verification to client: invalid username
+                client.emit('userLoginResult', defineVal.loginInvalidUsername);
+              } else {
+                var hash = user.password;
+                bcrypt.compare(psw, hash, function(err, result) {
+                  if (result) {                    
+                    createToken(username);
 
+                    const refreshToken = jwToken.encodeRefreshToken(username, psw);
+                    jwToken.saveRefreshToken(username, refreshToken);
 
+                    //result verification to client
+                    client.emit('userLoginResult', defineVal.validResult);   
+                    
+                    
+                    //set global values
+                    client.username = username;
+                    client.refreshToken = refreshToken;
+                    
+                  } else {
+                    //result verification to client: invalid password
+                    client.emit('userLoginResult', defineVal.loginInvalidPassword);
+                  }
+                });
+              }
+              db.close();
+          }
+      });  
+      } 
+  });
+}
 
-
-
-
-
-
-
+function createToken(usname){                      
+  const token = jwToken.encodeToken(usname);
+  client.emit('jwtResult', token);
+}
 
 
 

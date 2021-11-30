@@ -1,5 +1,11 @@
 var socket = io.connect("http://localhost:8888");
 
+const invalidResult = 'ko';
+const validResult = 'ok';
+const jwtExpired = 2;
+const loginInvalidUsername = 0;
+const loginInvalidPassword = 1;
+
 
 function drawChart(chartElement, type ,Data, Option){
     new Chart(chartElement, {
