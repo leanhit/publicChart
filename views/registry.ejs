@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title><%= title %></title>
+        <link rel='stylesheet' href='/stylesheets/registry.css' />
+    
+        <script src="/socket.io/socket.io.js"></script>
+    
+    
+        <script src="/javascripts/client/cookie.js"></script>
+        <script src="/javascripts/client/lib.js"></script>
+        <script src="/javascripts/client/registry.js"></script>
+        
+      </head>
+      
+<body>
+    <h1>Registry</h1>
+    <div id="divRegistry">
+        <table>
+            <tr>
+                <td><label>Username</label></td>
+                <td><input id="inUsername" onkeyup="charPress()" placeholder="usernme"></td>
+                <td><img id="imgValidUsname" src="/image/registry/invalid.png" ></td>
+            </tr>
+            <tr>
+                <td><label>Password</label></td>
+                <td><input type="password" id="inPassword" onkeyup="pswdPress()" placeholder="Password"></td>
+                <td><img id="imgValidPassword" src="/image/registry/invalid.png" ></td>
+            </tr>
+            <tr>
+                <td><label>Repassword</label></td>
+                <td><input type="password" id="inRepsword" onkeyup="rpwdPress()" placeholder="Repassword"></td>
+                <td><img id="imgValidRepsword" src="/image/registry/invalid.png" ></td>
+            </tr>
+            <tr>                
+                <td colspan="3"><button id="btnRegistry" onclick="registry()">Registry</button></td>
+                
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

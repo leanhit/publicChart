@@ -1,43 +1,38 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
-
-    <script src="/socket.io/socket.io.js"></script>
-
-
-    <script src="/javascripts/client/cookie.js"></script>
-    <script src="/javascripts/client/lib.js"></script>
-    <script src="/javascripts/client/index.js"></script>
+<html lang="en">
+    <head>
+        <title><%= title %></title>
+        <link rel='stylesheet' href='/stylesheets/index.css' />
     
-  </head>
-  <body>
-    <div id="divLogin"  >
-      <table>
-        <tr>
-          <td><label>Username</label></td>
-          <td><input type="text" id="inUsername" placeholder="Username"></td>
-        </tr>
-        <tr>
-          <td><label>Password</label></td>
-          <td><input type="password" id="inPassword" placeholder="Password"></td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <label>Remember me</label>
-            <input type="checkbox" id="cbRememberMe" checked>
-            <button id="btnLogin" onclick="login()">Login</button>
-          </td>
-        </tr>
-      </table>
+    
+        <script src="/socket.io/socket.io.js"></script>
+    
+    
+        <script src="/javascripts/client/cookie.js"></script>
+        <script src="/javascripts/client/lib.js"></script>
+        <script src="/javascripts/client/index.js"></script>
+        
+      </head>
       
-    </div> 
+<body>
+    
+    <div id="divHomeTopbar">
+        <a onclick="openLoginPage()">Log In</a>
+        <a onclick="openRegistryPage()">Regestry</a>
+    </div>
+    <div id="divHomeSidebar">
+        <div id="divHomeSidebarTop">
 
-
-
-
-  </body>
+        </div>
+        <div id="divHomeSidebarMain">
+            <h1>- Store your data</h1>
+            <h1>- View as chart</h1>
+            <h1>- Easy to use</h1>
+        </div>
+    </div>
+    <div id="divHomeMain">
+        <video src="/image/home/globe-500.mp4" autoplay ></video>
+        
+    </div>
+</body>
 </html>

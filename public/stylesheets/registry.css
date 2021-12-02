@@ -1,0 +1,12 @@
+
+#divRegistry{
+    display: block;
+    margin: auto;
+    width: 300px;
+  }
+  
+img{
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+}
