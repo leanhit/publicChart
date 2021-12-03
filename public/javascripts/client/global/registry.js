@@ -1,6 +1,10 @@
-
 window.onload = function(){
-    autoLogin();
+    //get token from cookie
+    if(getCookie('jwtoken')){
+        socket.emit('userLoginJwt', getCookie('jwtoken'));      
+    }else{
+        //do nothing
+    }
     
     setTimeout(()=>{    
         usernameElement = document.getElementById("inUsername");
@@ -10,10 +14,9 @@ window.onload = function(){
         imgUsernameElement = document.getElementById("imgValidUsname");
         imgPasswordElement = document.getElementById("imgValidPassword");
         imgRepswordElement = document.getElementById("imgValidRepsword");
-    }, 1000);
-
-    
+    }, 1000);    
 }
+
 const validChar = "abcdefghijklmnopqrstuvwxyz123457890_";
 const invalidCheckPath = "/image/registry/invalid.png";
 const validCheckPath = "/image/registry/valid.png";
@@ -33,7 +36,6 @@ let repsword = '';
 let isUsnameOk = false;
 let isPswordOk = false;
 let isRepswdOk = false;
-
 
 function checkValidUsername(username){
     if(username.length >= 5 && username.length <= 16){
@@ -117,8 +119,20 @@ function registry(){
 socket.on('registryUserResult', (data) =>{
     if(data === validResult){
         alert("Congraduation!");
-        openUserPage('haopv');
+        openPage('/');
     }else{
         alert("This username is exit");
     }
-})
+});
+
+
+socket.on('userLoginResult', (result) =>{
+    let loginStatus = result.loginStatus;
+
+    if(loginStatus === validResult){
+        socket.username = result.username;
+        openPage('/');
+    }else{
+        //do nothing
+    }
+});

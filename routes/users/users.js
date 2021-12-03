@@ -3,7 +3,8 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('userPage', { title: 'haopv' });
+  const title = (req.baseUrl).slice(1, req.baseUrl.length);
+  res.render('index', { title: title });
 });
 
 module.exports = router;

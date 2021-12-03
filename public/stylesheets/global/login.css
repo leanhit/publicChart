@@ -1,0 +1,9 @@
+#divLogin{
+  display: block;
+  margin: auto;
+  width: 280px;
+}
+
+#divLogin > table{
+  margin: auto;
+}

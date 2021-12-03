@@ -2,37 +2,46 @@
 <html lang="en">
     <head>
         <title><%= title %></title>
-        <link rel='stylesheet' href='/stylesheets/index.css' />
-    
+        <link rel='stylesheet' href='/stylesheets/index.css' />  
     
         <script src="/socket.io/socket.io.js"></script>
     
     
-        <script src="/javascripts/client/cookie.js"></script>
-        <script src="/javascripts/client/lib.js"></script>
+        <script src="/javascripts/client/global/cookie.js"></script>
+        <script src="/javascripts/client/global/lib.js"></script>
         <script src="/javascripts/client/index.js"></script>
         
       </head>
       
 <body>
+    <div id="divStart">
+        <div id="divHomeTopbar">
+            <a onclick="openLoginPage()">Log In</a>
+            <a onclick="openRegistryPage()">Regestry</a>
+        </div>
+        <div id="divHomeSidebar">
+            <div id="divHomeSidebarTop">
     
-    <div id="divHomeTopbar">
-        <a onclick="openLoginPage()">Log In</a>
-        <a onclick="openRegistryPage()">Regestry</a>
+            </div>
+            <div id="divHomeSidebarMain">
+                <h1>- Store your data</h1>
+                <h1>- View as chart</h1>
+                <h1>- Easy to use</h1>
+            </div>
+        </div>
+        <div id="divHomeMain">
+            <video src="/image/home/globe-500.mp4" autoplay ></video>            
+        </div>
     </div>
-    <div id="divHomeSidebar">
-        <div id="divHomeSidebarTop">
 
-        </div>
-        <div id="divHomeSidebarMain">
-            <h1>- Store your data</h1>
-            <h1>- View as chart</h1>
-            <h1>- Easy to use</h1>
-        </div>
+    <div id="divMain">
+        <h1>User Page</h1>
+        <button id="btnLogout" onclick="logout()">Logout</button>
+
+        <script>
+            
+    </script>
     </div>
-    <div id="divHomeMain">
-        <video src="/image/home/globe-500.mp4" autoplay ></video>
-        
-    </div>
+    
 </body>
 </html>

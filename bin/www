@@ -118,25 +118,25 @@ io.on('connection', (client) => {
     let isDecodeTokenOk = true;
 
     decodedToken.catch((err) => {
-      client.emit('userLoginResult', defineVal.jwtExpired);
+      loginResult(defineVal.jwtExpired);
       isDecodeTokenOk = false;
     }).then((decoded) => {
       if(isDecodeTokenOk)
-        client.emit('userLoginResult', defineVal.validResult); 
+        loginResult(defineVal.validResult, decoded.username);   
         console.log(decoded.username + " is login via token"); 
       });
   });
 
   client.on('userLogin', (loginInfo)=>{
     const usname = loginInfo.username;
+    console.log(usname);  
     let isDecodeTokenOk = true;
 
     let userRefreshToken = jwToken.getRefreshToken(usname);
     userRefreshToken.catch((err) => {
       console.log("error load refresh token");
       console.log(err);
-    }).then((refreshToken) =>{
-      
+    }).then((refreshToken) =>{      
       if(refreshToken){       
         let objRefreshToken = jwToken.decodeRefreshToken(refreshToken);
         objRefreshToken.catch((err) => {
@@ -150,20 +150,20 @@ io.on('connection', (client) => {
               //valid password
               if(loginInfo.password === jsonToken.password){
                 console.log(loginInfo.username + " is login via refresh token");
-                client.emit('userLoginResult', defineVal.validResult);
+                loginResult(defineVal.validResult, loginInfo.username);
 
                 createToken(loginInfo.username);
               }else{//invalid password
-                client.emit('userLoginResult', defineVal.loginInvalidPassword);
+                loginResult(defineVal.loginInvalidPassword);
               }
             }else{//invalid username
-              client.emit('userLoginResult', defineVal.loginInvalidUsername);
+              loginResult(defineVal.loginInvalidUsername);
             }
-          }
-          
+          }          
         });      
       }else{
         loginViaDatabase(loginInfo);
+        
       }
 
 
@@ -186,26 +186,25 @@ io.on('connection', (client) => {
             } else {
                 if (user == null) {                      
                   //result verification to client: invalid username
-                  client.emit('userLoginResult', defineVal.loginInvalidUsername);
+                  loginResult(defineVal.loginInvalidUsername);
                 } else {
                   var hash = user.password;
                   bcrypt.compare(psw, hash, function(err, result) {
                     if (result) {                    
                       createToken(username);
-                      createRefreshToken(usname, psw);
-                      
+                      createRefreshToken(username, psw);                     
 
                       //result verification to client
-                      client.emit('userLoginResult', defineVal.validResult);   
+                      loginResult(defineVal.validResult, username);   
                       
                       
                       //set global values
                       client.username = username;
-                      client.refreshToken = refreshToken;
+                      console.log(username + " is login via databse");
                       
                     } else {
                       //result verification to client: invalid password
-                      client.emit('userLoginResult', defineVal.loginInvalidPassword);
+                      loginResult(defineVal.loginInvalidPassword);
                     }
                   });
                 }
@@ -219,24 +218,25 @@ io.on('connection', (client) => {
   function createToken(usname){                      
     const token = jwToken.encodeToken(usname);
     client.emit('jwtResult', token);
+    console.log("result token");
   }
 
   function createRefreshToken(usname, psword){                        
     const refreshToken = jwToken.encodeRefreshToken(usname, psword);
     jwToken.saveRefreshToken(usname, refreshToken);
+    console.log("Save refresh token");
 
   }
-  //-------------------crete user home page -----------------
+
+  function loginResult(loginStatus, username){
+    const resultInfo = {
+      loginStatus: loginStatus,
+      username: username
+    }
+    client.emit('userLoginResult', resultInfo);
+    console.log("result client");
+  }
   
-  function createUserRouter(usname){
-    const usersRoutePath = __dirname + '/../routes/userRoutes/' ;    
-    let useRoutePath = usersRoutePath + usname + '.js';
-
-    fs.appendFile(useRoutePath, 'Hello content!', function (err) {
-      if (err) throw err;
-      console.log('Saved!');
-    });
-  }
 
 
   //------------------user registry block ---------------

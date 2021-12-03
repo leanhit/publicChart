@@ -7,7 +7,6 @@ var logger = require('morgan');
 var cors = require('cors');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
 var app = express();
 app.use(cors());
@@ -24,28 +23,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 
 
 //----------------Add new context-------------------------
-var loginRouter = require('./routes/login');
+var loginRouter = require('./routes/global/login');
 app.use('/login', loginRouter);
 
-var registryRouter = require('./routes/registry');
+var registryRouter = require('./routes/global/registry');
 app.use('/registry', registryRouter);
 
 
-
-var haopvRouter = require('./routes/userRoutes/haopv');
-app.use('/haopv', haopvRouter);
-
-function getRouter(usname){
-  const routeParth = './routes/userRoutes/' + usname;
-  let userRouter = require(routeParth);
-
-  const getPath = '/'+ usname;
-  app.use(getPath, userRouter)
-}
+var usersRouter = require('./routes/users/users');
+app.use('*', usersRouter);
 
 
 
@@ -75,20 +64,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('global/error');
 });
+
 module.exports = app;
-
-/*/Add new context
-var haopvRouter = require('./routes/userRoutes/haopv');
-app.use('/haopv', haopvRouter);
-*/
-
-
-
-
-
-
-
-
-

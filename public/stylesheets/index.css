@@ -1,3 +1,11 @@
+/*------------------divStart----------------------*/
+#divStart{
+    display: block;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
 #divHomeTopbar{
     display: block;
     position: fixed;
@@ -45,6 +53,7 @@
     bottom: 20%;
 
 }
+
 #divHomeMain{
     display: block;
     position: fixed;
@@ -55,9 +64,18 @@
     background-color: rgb(30, 5, 90);
 }
 
-
 #divHomeMain > video{
     position: absolute;
     margin-top: 5%;
     width: 100%;
+}
+
+/*------------------divMain----------------------*/
+#divMain{
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    background-color: red;
 }
