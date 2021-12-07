@@ -1,10 +1,5 @@
 window.onload = function(){
-    //get token from cookie
-    if(getCookie('jwtoken')){
-        socket.emit('userLoginJwt', getCookie('jwtoken'));      
-        
-    }else{
-    }
+    autoLogin();
 }
 
 function login(){
@@ -20,7 +15,7 @@ function login(){
 socket.on('userLoginResult', (result) =>{
     let loginStatus = result.loginStatus;
     let username = result.username;
-
+    
     switch (loginStatus){
         case loginInvalidUsername:
             alert("Invalid username");
@@ -31,7 +26,9 @@ socket.on('userLoginResult', (result) =>{
         case jwtExpired:
             alert("Token is expired");
             document.getElementById("divLogin").style.display = "block";
+            break;
         default: 
+        
             socket.username = username;           
             openPage('/');
       }

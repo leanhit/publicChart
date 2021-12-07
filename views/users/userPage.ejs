@@ -2,29 +2,105 @@
 <html lang="en">
     <head>
         <title><%= title %></title>
-        <link rel='stylesheet' href='/stylesheets/registry.css' />
+        <link rel='stylesheet' href='/stylesheets/users/userPage.css' />
     
         <script src="/socket.io/socket.io.js"></script> 
     
-        <script src="/javascripts/client/cookie.js"></script>
-        <script src="/javascripts/client/lib.js"></script>
+        <script src="/javascripts/client/global/cookie.js"></script>
+        <script src="/javascripts/client/global/lib.js"></script>
+        <script src="/javascripts/client/users/userPage.js"></script>
         
         
       </head>
       
 <body>
-    <h1>User Page</h1>
-    <button id="btnLogout" onclick="logout()">Logout</button>
 
-    <script>
-        function logout(){
+    <div id="divCoverAll">
+        <!---------topbar block-------------->
+        <div id="divTopbar">
+            <!--------topbar right--------------->
+          <div id="divTopbarRight">
+              <!---------topbar add box block---------->
+            <div id="divTopbarRightAdd">
+              <img id="imgTopbarAdd" src="/images/default/add.png" onclick="openTopbarAddMenu()">
+              <div id="divDropAddMenu" onclick="openTopbarAddMenu1()">
+                <!--------code for add box-------->
+              </div>
+            </div>
+            <!---------topbar main menu block---------->
+            <div id="divTopbarRightAvatar">
+              <img id="imgTopbarAvatar" src="/images/default/avatar.png" onclick="openTopbarMainMenu()">
+              <div id="divDropMainMenu" onclick="openTopbarMainMenu1()">
+                <!--------code for main menu-------->
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!--------sidebar block--------------->
+        <div id="divUserProfileSidebar">
+            <div id="divHomeSidebarTop">
+                <img id="imgSidebarAvatar"  onclick="changAvatar()" src="/images/avatar/avatar.png">
+    
+            </div>
+            <div id="divHomeSidebarMain">
+            </div>
+            <a id="aSidebarUsername">Username</a>
+            <button id="btnSidebarEditProfile" onclick="editProfile()">Edit profile</button>
+        </div>
+
+
+        <!-------------main div ----------->
+        <div id="divUserProfileMain">
+            <div id="divProfileTabs">                
+                <a id="aUserInfo" onclick="openInfo()">Infomation</a>
+                <a id="aUserBoxList" onclick="openBoxList()">Pandora boxes</a>
+            </div>
+            <br>
+
+            <canvas id="canvasLine"></canvas>
+        
+            <ul id="ulShowArena">content here</li>
+        </div>
+        <!---------frame of edit user profile------->
+        <div id="divEditProfile">
+        
+            <h1>User Page</h1>
+            <button id="btnLogout" onclick="logout()">Logout</button>
+
             
-            deleteCookie("jwtoken");
-            deleteCookie("gruu-username");
-            let aLogin = document.createElement('a');
-            aLogin.setAttribute('href',"/");
-            aLogin.click();
-        }
-    </script>
+
+        </div>
+        
+        <!---------frame of add box menu ------->
+        <div id="divTopbarAddMenu">
+            <div id="divTopbarAddMenuHead"></div>
+            <div id="divTopbarAddMenuBody">
+              <table>
+                <tr>
+                  <td>Add box</td>
+                </tr>
+              </table>
+            </div>
+            
+          </div>
+    
+          <!---------frame of main menu------->
+          <div id="divTopbarMainMenu">
+            <div id="divTopbarMainMenuHead"></div>
+            <div id="divTopbarMainMenuBody">
+              <table>
+                <tr>
+                  <td onclick="logout()">Log out</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+      </div>
+    
+
+
+
+    
 </body>
 </html>

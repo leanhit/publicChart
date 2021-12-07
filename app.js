@@ -32,9 +32,10 @@ app.use('/login', loginRouter);
 var registryRouter = require('./routes/global/registry');
 app.use('/registry', registryRouter);
 
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
-var usersRouter = require('./routes/users/users');
-app.use('*', usersRouter);
+var mainRouter = require('./routes/users/mainRoute');
+app.use('*', mainRouter);
 
 
 

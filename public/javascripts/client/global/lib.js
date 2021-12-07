@@ -11,15 +11,29 @@ const loginInvalidPassword = 1;
 let usname = "";
 let psword = "";
 
+
+function logout(){        
+  deleteCookie("jwtoken");
+  openPage('/');
+}
+
 function openPage(pageTag){
   let aLogin = document.createElement('a');
   aLogin.setAttribute('href',pageTag);
   setTimeout(() => {
     aLogin.click();
-  }, 100);
+  }, 10);
   
 }
 
+function autoLogin(){
+  //get token from cookie
+  if(getCookie('jwtoken')){        
+    socket.emit('userLoginJwt', getCookie('jwtoken'));      
+  }else{        
+      //do nothing
+  }
+}
 
 socket.on('jwtResult', function(token){
   setCookie('jwtoken', token, "2000");

@@ -10,8 +10,13 @@ const loginInvalidPassword = 1;
 const dbAllUser = 'dbAllUser';
 const baseUrl = 'mongodb://localhost:27017/';
 const userColection = 'users';
-const dbUser = 'dbUser_';
+const dbUser = 'userDB_';
+
+//define db of jswToken
 const refreshTokenCollection = 'refreshToken';
+
+//define db of pandoraBox
+const boxListsColection = 'boxLists';
 
 
 module.exports = {
@@ -25,6 +30,8 @@ module.exports = {
     baseUrl: baseUrl,
     userColection: userColection,
     dbUser: dbUser,
-    refreshTokenCollection: refreshTokenCollection
+    refreshTokenCollection: refreshTokenCollection,
+
+    boxListsColection: boxListsColection
 
 }

@@ -1,10 +1,5 @@
 window.onload = function(){
-    //get token from cookie
-    if(getCookie('jwtoken')){
-        socket.emit('userLoginJwt', getCookie('jwtoken'));      
-    }else{
-        //do nothing
-    }
+    autoLogin();
     
     setTimeout(()=>{    
         usernameElement = document.getElementById("inUsername");

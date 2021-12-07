@@ -115,22 +115,23 @@ io.on('connection', (client) => {
   //get login by jsonwebtoken
    client.on('userLoginJwt', function(token){
     var decodedToken = jwToken.decodeToken(token);
-    let isDecodeTokenOk = true;
+    
 
     decodedToken.catch((err) => {
       loginResult(defineVal.jwtExpired);
-      isDecodeTokenOk = false;
+      console.log("Token is expired")
     }).then((decoded) => {
-      if(isDecodeTokenOk)
-        loginResult(defineVal.validResult, decoded.username);   
-        console.log(decoded.username + " is login via token"); 
-      });
+      if (typeof(decoded) !== 'undefined') {
+
+        loginResult(defineVal.validResult, decoded?.username);   
+        console.log(decoded?.username + " is login via token"); 
+      }
+    });
   });
 
   client.on('userLogin', (loginInfo)=>{
     const usname = loginInfo.username;
     console.log(usname);  
-    let isDecodeTokenOk = true;
 
     let userRefreshToken = jwToken.getRefreshToken(usname);
     userRefreshToken.catch((err) => {
@@ -144,7 +145,7 @@ io.on('connection', (client) => {
           loginViaDatabase(loginInfo);
           isDecodeTokenOk = false;
         }).then((jsonToken) =>{          
-          if(isDecodeTokenOk){
+          if(typeof(jsonToken) !== 'undefined'){
               //valid username
             if(loginInfo.username === jsonToken.username){
               //valid password
