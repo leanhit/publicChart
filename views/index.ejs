@@ -1,49 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title><%= title %></title>
-        <link rel="shortcut icon" href="">
-        <link rel='stylesheet' href='/stylesheets/index.css' />  
-    
-        <script src="/socket.io/socket.io.js"></script>
-    
-    
-        <script src="/javascripts/client/global/cookie.js"></script>
-        <script src="/javascripts/client/global/lib.js"></script>
-        <script src="/javascripts/client/index.js"></script>
-        
-      </head>
-      
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <!-------public------------>
+  <% include modules/header%>
+
+    <!---------private-------------->
+
+    <link rel='stylesheet' href='/stylesheets/index.css' />
+    <script src="/javascripts/client/index.js"></script>
+
+</head>
+
 <body>
-    <div id="divStart">
-        <div id="divHomeTopbar">
-            <a onclick="openLoginPage()">Log In</a>
-            <a onclick="openRegistryPage()">Regestry</a>
-        </div>
-        <div id="divHomeSidebar">
-            <div id="divHomeSidebarTop">
-    
-            </div>
-            <div id="divHomeSidebarMain">
-                <h1>- Store your data</h1>
-                <h1>- View as chart</h1>
-                <h1>- Easy to use</h1>
-            </div>
-        </div>
-        <div id="divHomeMain">
-            <video src="/image/home/globe-500.mp4" autoplay ></video>            
-        </div>
-    </div>
 
-    <div id="divMain">
-        <h1>User Page</h1>
-        <button id="btnLogout" onclick="logout()">Logout</button>
-        <a onclick="openProfile()">Profile</a>
+  <div id="divCoverAll">
+    <!---------topbar block-------------->
+    <% include modules/topbar%>
 
-        <script>
-            
-    </script>
-    </div>
-    
+      <!--------sidebar block--------------->
+      <div id="divSidebar">
+        <h1>side bar</h1>
+      </div>
+
+
+      <!-------------main div ----------->
+      <div id="divMainBody">
+        <h1>main body</h1>
+      </div>
+
+      <!-------popup here ---------->
+      <% include modules/popups%>
+        
+  </div>
 </body>
+
 </html>

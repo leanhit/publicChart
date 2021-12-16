@@ -24,17 +24,19 @@ app.use(express.static('public'));
 
 app.use('/', indexRouter);
 
-
-//----------------Add new context-------------------------
-var loginRouter = require('./routes/global/login');
-app.use('/login', loginRouter);
-
-var registryRouter = require('./routes/global/registry');
-app.use('/registry', registryRouter);
-
+//----------------------add new code here----------------
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
-var mainRouter = require('./routes/users/mainRoute');
+var loginRouter = require('./routes/login');
+app.use('/login', loginRouter);
+
+var registryRouter = require('./routes/registry');
+app.use('/registry', registryRouter);
+
+var newRouter = require('./routes/new');
+app.use('/new', newRouter);
+
+var mainRouter = require('./routes/multiRoute');
 app.use('*', mainRouter);
 
 
@@ -49,8 +51,8 @@ app.use('*', mainRouter);
 
 
 
-//-----------------------------
 
+//------------end addcode----------------
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -65,7 +67,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('global/error');
+  res.render('modules/error');
 });
 
 module.exports = app;

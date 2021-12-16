@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        <%= title %>
+    </title>
+    <!-------public------------>
+    <% include ../modules/header%>
+
+        <!---------private-------------->
+
+        <link rel='stylesheet' href='/stylesheets/pages/users.css' />
+        <script src="/javascripts/client/pages/users.js"></script>
+
+</head>
+
+<body>
+
+    <div id="divCoverAll">
+        <!---------topbar block-------------->
+        <% include ../modules/topbar%>
+
+            <!--------sidebar block--------------->
+            <div id="divSidebar">
+                <canvas id="cvMainLine"></canvas>
+                <img id="imgSidebarAvatar" onclick="changAvatar()" src="/images/default/avatar.png">
+
+
+                <div id="divSidebarMain">
+                </div>
+                <a id="aSidebarUsername">Username</a>
+                <button id="btnSidebarEditProfile" onclick="editProfile()">Edit profile</button>
+            </div>
+
+
+            <!-------------main div ----------->
+            <div id="divMain">
+                <div id="divProfileTabs">
+                    <div id="divTab01">
+                        <a id="aUserInfo" onclick="openInfo()">Infomation</a>
+
+                        <canvas id="cvUnderLine01"></canvas>
+                    </div>
+
+                    <div id="divTab02">
+                        <a id="aUserBoxList" onclick="openBoxList()">Pandora boxes</a>
+
+                        <canvas id="cvUnderLine02"></canvas>
+                    </div>
+                </div>
+                <br>
+
+                <canvas id="cvMainLine"></canvas>
+                
+                <!-----------------div user info-------->
+                <div id="divUserInfo">
+                    <div id="divUserName">
+                        <table>
+                            <tr>
+                                <td>First name:</td>
+                                <td>Last name:</td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" id="inInfoFistName" placeholder="First name" disabled></td>
+                                <td><input type="text" id="inInfoLastName" placeholder="Last name" disabled></td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div id="divUserSex">
+                        <label>Sex:</label> <br>
+                        <input id="inUserSex" type="text" placeholder="Sex" disabled>
+                    </div>
+
+                    <div id="divUserBirthday">
+                        <label>Birthday:</label> <br>
+                        <input id="inUserBirthday" type="text" placeholder="Birthday" disabled>
+                    </div>
+
+                    <div id="divUserPhoneNumber">
+                        <label>Phone number:</label> <br>
+                        <input id="inUserPhoneNumber" type="text" placeholder="Phone Number" disabled>
+                    </div>
+
+                    <div id="divUserEmail">
+                        <label>Email</label> <br>
+                        <input id="inUserEmail" type="text" placeholder="Email:" disabled>
+                    </div>
+                    
+                    <div id="divUserAddress">
+                        <label>Address</label> <br>
+                        <input id="inUserAddress" type="text" placeholder="Adress:" disabled>
+                    </div>
+
+
+
+                </div>
+
+                <div id="divBoxesInfo">
+                    
+                </div>
+            </div>
+
+            <!-------popup here ---------->
+            <% include ../modules/popups%>
+
+    </div>
+</body>
+
+</html>

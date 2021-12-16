@@ -1,0 +1,171 @@
+#divMainBody{
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    height: 90%;
+    width: 100%;
+}
+
+#divBodyHead{
+    float: left;
+    position: relative;
+    top: 15px;
+    left: 50px;
+    width: 20%;
+}
+
+#aUsername{
+    font-size: 20px;
+    font-weight: 200;
+}
+
+#aBoxname{
+    font-size: 30px;
+    font-weight: 200;
+}
+
+#divBodyHead > a:hover{
+    color: blue;
+    text-decoration: underline;
+}
+
+#divBodyHead > label {
+    position: absolute;
+    top: 6px;
+    margin-left: 3px;
+    width: 45px;
+    height: 18px;   
+
+    font-size: 16px;
+
+    border: 1px solid black;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px; 
+}
+
+
+/* ---------body div------------------*/
+#divBodyLeft{
+    position: fixed;
+    background-color: grey;
+
+    height: 80%;
+    bottom: 0px;
+    left: 0px;
+    width: 20%;
+}
+
+#divBodyRight{
+    position: fixed;
+
+    height: 80%;
+    bottom: 0px;
+    right: 0px;
+    width: 80%;
+}
+
+/*-----------------*/
+#divProfileTabs{
+    float: right;
+    top: 0px;
+    height: 11%;
+    width: 80%;
+  }
+
+  #divTab01 > a:hover{
+    color: red;
+}
+
+#divTab02 > a:hover{
+    color: red;
+}
+
+#divTab03 > a:hover{
+      color: red;
+  }
+  
+  /*--------------divTab01----------*/
+  #divTab01{
+    position: relative;
+      height: 100%;
+      width: 130px;
+  }
+  
+  #aInfoTab{
+    position: absolute;
+  
+    margin-top: 15%;
+    margin-left: 0%;
+  
+    font-size: 20px;      
+  }
+  
+  #cvUnderLine01{
+    position: absolute;
+    bottom: 0%;
+    width: 100%;
+    height: 1px;
+    background-color: red;
+  }
+  /*--------------divTab02----------*/
+  #divTab02{
+    position: absolute ;
+      top: 0px;
+      margin-left: 130px;
+    
+      height: 11%;
+      width: 130px;
+  }
+  
+  #aTableTab{
+    position: absolute;
+  
+    margin-top: 15%;
+    margin-left: 0%;
+    
+      font-size: 20px;   
+      
+  }
+  
+  #cvUnderLine02{
+    position: absolute;
+    display: none;
+    bottom: 0%;
+    width: 100%;
+    height: 1px;
+    background-color: red;
+  }
+  
+  /*--------------divTab03----------*/
+  #divTab03{
+    position: absolute ;
+      top: 0px;
+      margin-left: 260px;
+    
+      height: 11%;
+      width: 130px;
+  }
+  
+  #aChartTab{
+    position: absolute;
+  
+    margin-top: 15%;
+    margin-left: 0%;
+    
+      font-size: 20px;   
+      
+  }
+  
+  #cvUnderLine03{
+    position: absolute;
+    display: none;
+    bottom: 0%;
+    width: 100%;
+    height: 1px;
+    background-color: red;
+  }
+  
+  /*-------------------------------------*/
+  

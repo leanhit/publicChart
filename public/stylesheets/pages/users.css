@@ -1,0 +1,206 @@
+/*--------------main div ----------*/
+
+#divMain{
+    display: block;
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    width: 70%;
+    height: 90%;
+    background-color: rgb(241, 248, 202);
+}
+
+#cvMainLine{
+  position: absolute;
+    top: 15%;
+    width: 100%;
+    height: 1px;
+    background-color: rgb(252, 176, 176);
+}
+
+/*---------main head--------*/
+#divProfileTabs{
+    margin-left: 5%;
+
+    height: 15%;
+    width: 30%;
+}
+
+/*--------------divTab01----------*/
+#divTab01{
+  position: relative;
+    height: 100%;
+    width: 130px;
+}
+
+#aUserInfo{
+  position: absolute;
+
+  margin-top: 30%;
+  margin-left: 0%;
+
+  font-size: 20px;      
+}
+
+#cvUnderLine01{
+  position: absolute;
+  bottom: 0%;
+  width: 100%;
+  height: 1px;
+  background-color: red;
+}
+/*--------------divTab02----------*/
+#divTab02{
+  position: absolute ;
+    top: 0px;
+    margin-left: 130px;
+  
+    height: 15%;
+    width: 130px;
+}
+
+#aUserBoxList{
+  position: absolute;
+
+  margin-top: 30%;
+  margin-left: 0%;
+  
+    color: red;
+    font-size: 20px;    
+    
+}
+
+#cvUnderLine02{
+  position: absolute;
+  display: none;
+  bottom: 0%;
+  width: 100%;
+  height: 1px;
+  background-color: red;
+}
+
+/*-------------------------------------*/
+#aUserBoxList{
+    color: black;
+    margin-left: 4%;
+    font-size: 20px;    
+}
+
+#ulShowArena{
+    position: absolute;
+    padding-left: 5 ;
+    top: 20%;
+    width: 100%;
+    background-color: rgb(221, 129, 92)10
+}
+
+/*-------------side bar----------------*/
+
+#divSidebar{
+  position: fixed;
+  bottom:  0px;
+  left: 0px;
+  width: 30%;
+  height: 90%;
+}
+
+/*------sidebar top-----*/
+#imgSidebarAvatar{
+  position: absolute;
+    margin-top: 45px;
+    margin-left: 45px;
+    height: 300px;
+    width: 300px;
+    
+    border-top-left-radius: 150px;
+    border-top-right-radius: 150px;
+    border-bottom-left-radius: 150px;
+    border-bottom-right-radius: 150px;
+}
+
+
+#divSidebarMain{
+    position: relative;
+    float: auto;
+    width: 80%;
+    margin-top: 85%;
+    
+    background-color: rgb(248, 7, 7);
+
+}
+
+#aSidebarUsername{
+    margin-top: 20px;
+    margin-left: 45px;
+    height: 25px;
+    width: 300px;    
+    font-size: 20px;
+}
+
+#btnSidebarEditProfile{
+    margin-top: 20px;
+    margin-left: 45px;
+    height: 35px;
+    width: 300px;
+    font-size: 15px;
+    
+    
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+
+    background-color: rgb(184, 238, 248);
+}
+
+/*-----------edit profile block----------------*/
+
+#divEditProfile{
+    display: none;
+    position: absolute;
+    margin-top: 0%;
+    margin-left: 25%;
+
+    width: 50%;
+    height: 100%;
+
+    background-color: rgb(173, 252, 252);
+
+}
+
+/*-----------------show info and boxses---------*/
+#divBoxesInfo { 
+  display: none;
+  position: fixed;
+
+  height: 71%;
+  width: 70%;  
+  top: 25%;
+
+
+  margin-right: 30%;
+  overflow-y: scroll;  
+}
+
+/*----------info------------*/
+#divUserInfo { 
+  display: block;
+  position: fixed;
+
+  height: 71%;
+  width: 70%;  
+  top: 25%;
+
+  margin-right: 30%;
+  overflow-y: scroll;  
+}
+#divUserInfo > div{
+  margin-top: 25px;
+
+}
+#divUserInfo> a{
+  font-size: 25px;
+  width: 250px;
+  height: 40px;
+  
+}

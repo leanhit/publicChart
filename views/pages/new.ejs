@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <!-------public------------>
+  <% include ../modules/header%>
+
+    <!---------private-------------->
+
+    <link rel='stylesheet' href='/stylesheets/pages/new.css' />
+    <script src="/javascripts/client/pages/new.js"></script>
+
+</head>
+
+<body>
+
+  <div id="divCoverAll">
+    <!---------topbar block-------------->
+    <% include ../modules/topbar%>
+
+      <!--------sidebar block--------------->
+      <div id="divSidebar">
+        <h1>side bar</h1>
+      </div>
+
+
+      <!-------------main div ----------->
+      <div id="divMainBody">
+        <h1>Create new box</h1>
+        <a>Box is a database</a>
+        <canvas id="cvFirstLine"></canvas>
+        <table>
+          <tr>
+            <td colspan="2">
+              <a style="font-size: 20px; font-weight: 100;">Owner</a>
+            </td>
+            <td>
+              <a style="font-size: 20px; font-weight: 100;">Box name</a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div id="divNewBoxOwner">
+                <img id="imgNewBoxUserAvatar" src="/images/default/avatar.png">
+                <a id="aNewBoxUsername">username</a>
+              </div>
+            </td>
+            <td style="font-size: 20px;">/</td>
+            <td><input type="text" id="inBoxName" onkeyup="charPress()" placeholder="Box name"></td>
+          </tr>
+          <tr>
+            <td colspan="3">Name's conetent 0 -> 9, a -> z, A -> Z, _, 3 <= Length <=20 </td>
+          </tr>
+        </table>
+        <br><br>
+        <a style="font-weight: 100; font-size: 20px;">Description</a>
+        <br>
+        <input type="textarea rows=" cols="5" id="inBoxDescription" placeholder="Box Description"></textarea>
+        <canvas id="cvFirstLine"></canvas>
+        <br>
+        <table>
+          <tr>
+            <td rowspan="2">
+              <input type="radio" id="radioPublic" name="radioSelect" value="public" checked>
+            </td>
+            <td>
+              <label for="radioPublic" style="font-weight: 100; font-size: 20px;">Public</label>
+            </td>
+          </tr>
+          <tr>            
+            <td>
+              Public: Every body can see your box
+            </td>
+          </tr>
+
+          <tr>
+            <td rowspan="2">
+              <input type="radio" id="radioPrivate" name="radioSelect" value="private">
+            </td>
+            <td>
+              <label for="radioPrivate" style="font-weight: 100; font-size: 20px;">Private</label>
+            </td>
+          </tr>
+          <tr>
+            
+            <td>
+              Private: Every body can't see your box
+            </td>
+          </tr>
+        </table>
+        <br>
+        <canvas id="cvFirstLine"></canvas>
+        <button id="btnCreateBox" onclick="createNewBox()" disabled>Create box</button>
+        
+
+      </div>
+
+      <!-------popup here ---------->
+      <% include ../modules/popups%>
+
+  </div>
+</body>
+
+</html>

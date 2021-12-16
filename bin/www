@@ -98,6 +98,8 @@ const fs = require('fs');
 var jwToken = require('../public/javascripts/server/jwToken.js');
 var defineVal = require('../public/javascripts/server/defineValue.js');
 const { info } = require('console');
+const dbManage = require('../public/javascripts/server/dbManage');
+const { isBoxDatabaeCreated } = require('../public/javascripts/server/defineValue.js');
 
 
 
@@ -113,58 +115,59 @@ io.on('connection', (client) => {
 
   //login 
   //get login by jsonwebtoken
-   client.on('userLoginJwt', function(token){
+  client.on('userLoginJwt', function (token) {
     var decodedToken = jwToken.decodeToken(token);
-    
+
 
     decodedToken.catch((err) => {
       loginResult(defineVal.jwtExpired);
       console.log("Token is expired")
     }).then((decoded) => {
-      if (typeof(decoded) !== 'undefined') {
-
-        loginResult(defineVal.validResult, decoded?.username);   
-        console.log(decoded?.username + " is login via token"); 
+      if (typeof (decoded) !== 'undefined') {
+        client.username = decoded.username;
+        loginResult(defineVal.validResult, decoded?.username);
+        console.log(decoded?.username + " is login via token");
       }
     });
   });
 
-  client.on('userLogin', (loginInfo)=>{
+  client.on('userLogin', (loginInfo) => {
     const usname = loginInfo.username;
-    console.log(usname);  
+    console.log(usname);
 
     let userRefreshToken = jwToken.getRefreshToken(usname);
     userRefreshToken.catch((err) => {
       console.log("error load refresh token");
       console.log(err);
-    }).then((refreshToken) =>{      
-      if(refreshToken){       
+    }).then((refreshToken) => {
+      if (refreshToken) {
         let objRefreshToken = jwToken.decodeRefreshToken(refreshToken);
         objRefreshToken.catch((err) => {
           console.log("Decode refresh token is failt");
           loginViaDatabase(loginInfo);
           isDecodeTokenOk = false;
-        }).then((jsonToken) =>{          
-          if(typeof(jsonToken) !== 'undefined'){
-              //valid username
-            if(loginInfo.username === jsonToken.username){
+        }).then((jsonToken) => {
+          if (typeof (jsonToken) !== 'undefined') {
+            //valid username
+            if (loginInfo.username === jsonToken.username) {
               //valid password
-              if(loginInfo.password === jsonToken.password){
+              if (loginInfo.password === jsonToken.password) {
                 console.log(loginInfo.username + " is login via refresh token");
+                client.username = loginInfo.username;
                 loginResult(defineVal.validResult, loginInfo.username);
 
                 createToken(loginInfo.username);
-              }else{//invalid password
+              } else {//invalid password
                 loginResult(defineVal.loginInvalidPassword);
               }
-            }else{//invalid username
+            } else {//invalid username
               loginResult(defineVal.loginInvalidUsername);
             }
-          }          
-        });      
-      }else{
+          }
+        });
+      } else {
         loginViaDatabase(loginInfo);
-        
+
       }
 
 
@@ -172,64 +175,64 @@ io.on('connection', (client) => {
 
   });
 
-  function loginViaDatabase(loginInfo){
+  function loginViaDatabase(loginInfo) {
     const username = loginInfo.username;
     const psw = loginInfo.password;
 
-    MongoClient.connect(defineVal.baseUrl, function(err, db){
-        if (err) {
+    MongoClient.connect(defineVal.baseUrl, function (err, db) {
+      if (err) {
+        throw err;
+      } else {
+        var dbo = db.db(defineVal.dbAllUser);
+        dbo.collection(defineVal.userColection).findOne({ username: username }, function (err, user) {
+          if (err) {
             throw err;
-        } else {                    
-          var dbo = db.db(defineVal.dbAllUser);
-          dbo.collection(defineVal.userColection).findOne({username: username}, function(err, user){                  
-            if (err) {
-                throw err;
+          } else {
+            if (user == null) {
+              //result verification to client: invalid username
+              loginResult(defineVal.loginInvalidUsername);
             } else {
-                if (user == null) {                      
-                  //result verification to client: invalid username
-                  loginResult(defineVal.loginInvalidUsername);
-                } else {
-                  var hash = user.password;
-                  bcrypt.compare(psw, hash, function(err, result) {
-                    if (result) {                    
-                      createToken(username);
-                      createRefreshToken(username, psw);                     
+              var hash = user.password;
+              bcrypt.compare(psw, hash, function (err, result) {
+                if (result) {
+                  createToken(username);
+                  createRefreshToken(username, psw);
 
-                      //result verification to client
-                      loginResult(defineVal.validResult, username);   
-                      
-                      
-                      //set global values
-                      client.username = username;
-                      console.log(username + " is login via databse");
-                      
-                    } else {
-                      //result verification to client: invalid password
-                      loginResult(defineVal.loginInvalidPassword);
-                    }
-                  });
+                  //result verification to client
+                  loginResult(defineVal.validResult, username);
+
+
+                  //set global values
+                  client.username = username;
+                  console.log(username + " is login via databse");
+
+                } else {
+                  //result verification to client: invalid password
+                  loginResult(defineVal.loginInvalidPassword);
                 }
-                db.close();
+              });
             }
-        });  
-        } 
+            db.close();
+          }
+        });
+      }
     });
   }
 
-  function createToken(usname){                      
+  function createToken(usname) {
     const token = jwToken.encodeToken(usname);
     client.emit('jwtResult', token);
     console.log("result token");
   }
 
-  function createRefreshToken(usname, psword){                        
+  function createRefreshToken(usname, psword) {
     const refreshToken = jwToken.encodeRefreshToken(usname, psword);
     jwToken.saveRefreshToken(usname, refreshToken);
     console.log("Save refresh token");
 
   }
 
-  function loginResult(loginStatus, username){
+  function loginResult(loginStatus, username) {
     const resultInfo = {
       loginStatus: loginStatus,
       username: username
@@ -237,73 +240,190 @@ io.on('connection', (client) => {
     client.emit('userLoginResult', resultInfo);
     console.log("result client");
   }
-  
+
 
 
   //------------------user registry block ---------------
 
   //get event registry
-  client.on('registryUser', function(loginInfo){
+  client.on('registryUser', function (loginInfo) {
     var usn = loginInfo.username;
     var psw = loginInfo.password;
     console.log(usn + "  " + psw)
 
-     //check username exit
-     MongoClient.connect(defineVal.baseUrl, function(err, db){
-       if (err) {
-           throw err;
-       } 
-       else {
-           var dbo = db.db(defineVal.dbAllUser);
-           dbo.collection(defineVal.userColection).findOne({username: usn}, function(err, user){
-               if (err) {
-                   throw err;
-               } 
-               else {
-                 console.log(user?.username.length > 0);
-                   if (user?.username.length > 0) {              
-                     //result verification to client
-                     client.emit('registryUserResult', defineVal.invalidResult);
-                   } else {
-                     //hash password
-                     const saltRounds = 10;
-                     bcrypt.genSalt(saltRounds, function(err, salt){
-                         bcrypt.hash(psw, salt, function(err, hash){
-                           //add new user to dbAllUser
-                           var newUser = {
-                             username: usn,
-                             password: hash,
-                             created: new Date()
-                           };
-                           dbo.collection(defineVal.userColection).insertOne(newUser, function(err, res) {
-                             if (err){ 
-                               throw err;
-                             }
-                             else{
-                               createToken(usn);
-                                createRefreshToken(usn, psw);                   
+    //check username exit
+    MongoClient.connect(defineVal.baseUrl, function (err, db) {
+      if (err) {
+        throw err;
+      }
+      else {
+        var dbo = db.db(defineVal.dbAllUser);
+        dbo.collection(defineVal.userColection).findOne({ username: usn }, function (err, user) {
+          if (err) {
+            throw err;
+          }
+          else {
+            console.log(user?.username.length > 0);
+            if (user?.username.length > 0) {
+              //result verification to client
+              client.emit('registryUserResult', defineVal.invalidResult);
+            } else {
+              //hash password
+              const saltRounds = 10;
+              bcrypt.genSalt(saltRounds, function (err, salt) {
+                bcrypt.hash(psw, salt, function (err, hash) {
+                  //add new user to dbAllUser
+                  var newUser = {
+                    username: usn,
+                    password: hash,
+                    created: new Date()
+                  };
+                  dbo.collection(defineVal.userColection).insertOne(newUser, function (err, res) {
+                    if (err) {
+                      throw err;
+                    }
+                    else {
+                      client.username = usn;
+                      createToken(usn);
+                      createRefreshToken(usn, psw);
 
-                                 //result verification to client
-                                 client.emit('registryUserResult', defineVal.validResult);
-                                 db.close();
-                                 //create user default database
-                                 
-                             }
-                           });                          
-                                     
-                         });
-                     });
-                     
-                   }
-               }       
-           });
-       }
-     });
+                      //result verification to client
+                      client.emit('registryUserResult', defineVal.validResult);
+                      db.close();
+                      //create user default database
 
-    
-    
+                    }
+                  });
+
+                });
+              });
+
+            }
+          }
+        });
+      }
+    });
   });
 
+  //---------------------function process box-------------------
+  function createBoxResult(resultInfo) {
+    client.emit("createNewBoxResult", resultInfo);
+  }
+
+  client.on("createNewBox", (boxInfo) => {
+    let username = boxInfo.owner;
+    let boxName = boxInfo.boxName;
+
+    if (username === client.username) {
+      dbManage.insertBoxToLists(boxInfo).catch((err) => {
+        createBoxResult({
+          resultType: !isBoxDatabaeCreated,
+          boxName: null
+        });
+      }).then((idInList) => {
+        //dbManage.createBoxDatabase(boxInfo);
+        createBoxResult({
+          resultType: isBoxDatabaeCreated,
+          boxName: client.username + '/' + boxName
+        });
+
+      });
+
+    }
+  });
+
+  client.on('getBoxesList', (owner) => {
+    //owner get boxes list
+    let boxesListObj;
+
+    if (owner === client.username) {
+      boxesListObj = dbManage.getBoxesList({
+        owner: owner,
+        boxType: true
+      });
+    } else {//other guy
+      boxesListObj = dbManage.getBoxesList({
+        owner: owner,
+        boxType: false
+      });
+    }
+
+    boxesListObj.catch((err) => {
+
+      getBoxesListResult({ resultType: false });
+    }).then((boxesList) => {
+      if (boxesList === null) {
+        console.log(boxesList);
+        getBoxesListResult({ resultType: false });
+      } else if (typeof (boxesList) === 'undefined') {
+        getBoxesListResult({ resultType: false });
+      } else {
+        getBoxesListResult({ resultType: true, boxesList });
+      }
+
+    });
+
+  });
+
+  function getBoxesListResult(result) {
+    client.emit('getBoxesListResult', result);
+  }
+
+  client.on('getBoxDetail', (request) => {
+    console.log(request)
+    let owner = request.owner;
+
+    let boxObj = dbManage.getBoxDetail(request);
+    let result = '';
+
+    boxObj.catch((err) => {
+      console.log(err)
+      result = {
+        resultType: false,
+        boxDetail: null
+      };
+    }).then((boxDetail) => {
+      if (typeof (boxDetail) === 'undefined') {
+        result = {
+          resultType: false,
+          boxDetail: null
+        };
+      } else if (boxDetail !== null) {
+        let boxType = boxDetail.boxType;
+        console.log((owner !== client.username) ,boxType,  (boxType == defineVal.private))
+        if ((owner !== client.username) && (boxType === defineVal.private)) {
+          result = {
+            resultType: false,
+            boxDetail: null
+          };
+        } else {
+          result = {
+            resultType: true,
+            boxDetail: editBoxDetail(boxDetail)
+          };
+        }
+      } else {
+        result = {
+          resultType: false,
+          boxDetail: null
+        }
+      }
+      console.log(result);
+      client.emit('getBoxDetailResult', result);
+    });
+  });
+
+  function editBoxDetail(boxDetail){
+    return  {
+      boxName: boxDetail.boxName,
+      boxType: boxDetail.boxType,
+      boxDescription: boxDetail.boxDescription,
+      tablesNumber: boxDetail.tablesNumber,
+      tablesName: boxDetail.tablesName,
+      created: boxDetail.created,
+      lastEdit: boxDetail.lastEdit
+    }
+  }
 
   client.on('disconnect', () => {
     console.log('user disconnected');

@@ -2,15 +2,12 @@
 <html lang="en">
     <head>
         <title><%= title %></title>
-        <link rel="shortcut icon" href="">
-        <link rel='stylesheet' href='/stylesheets/global/registry.css' />
-    
         <script src="/socket.io/socket.io.js"></script>
-    
-    
+        <script src="/javascripts/client/global/autoLogin.js"></script>    
         <script src="/javascripts/client/global/cookie.js"></script>
-        <script src="/javascripts/client/global/lib.js"></script>
-        <script src="/javascripts/client/global/registry.js"></script>
+
+        <script src="/javascripts/client/pages/registry.js"></script>
+        <link rel='stylesheet' href='/stylesheets/pages/registry.css' />
         
       </head>
       
@@ -21,17 +18,17 @@
             <tr>
                 <td><label>Username</label></td>
                 <td><input id="inUsername" onkeyup="charPress()" placeholder="usernme"></td>
-                <td><img id="imgValidUsname" src="/image/registry/invalid.png" ></td>
+                <td><img id="imgValidUsname" src="/images/registry/invalid.png" ></td>
             </tr>
             <tr>
                 <td><label>Password</label></td>
                 <td><input type="password" id="inPassword" onkeyup="pswdPress()" placeholder="Password"></td>
-                <td><img id="imgValidPassword" src="/image/registry/invalid.png" ></td>
+                <td><img id="imgValidPassword" src="/images/registry/invalid.png" ></td>
             </tr>
             <tr>
                 <td><label>Repassword</label></td>
                 <td><input type="password" id="inRepsword" onkeyup="rpwdPress()" placeholder="Repassword"></td>
-                <td><img id="imgValidRepsword" src="/image/registry/invalid.png" ></td>
+                <td><img id="imgValidRepsword" src="/images/registry/invalid.png" ></td>
             </tr>
             <tr>                
                 <td colspan="3"><button id="btnRegistry" onclick="registry()">Registry</button></td>

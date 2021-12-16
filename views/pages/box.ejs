@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <!-------public------------>
+  <% include ../modules/header%>
+
+    <!---------private-------------->
+
+    <link rel='stylesheet' href='/stylesheets/pages/box.css' />
+    <script src="/javascripts/client/pages/box.js"></script>
+
+</head>
+
+<body>
+
+  <div id="divCoverAll">
+    <!---------topbar block-------------->
+    <% include ../modules/topbar%>
+
+      <!--------sidebar block--------------->
+      <div id="divSidebar" style="width: 0px; display: none;">
+        <h1>side bar</h1>
+      </div>
+
+
+      <!-------------main div ----------->
+      <div id="divMainBody">
+        <div id="divBodyHead">
+          <a id="aUsername">username</a>
+          <a>/</a>
+          <a id="aBoxname">boxname</a>
+          <label id="lblBoxStyle">Public</label>
+        </div>
+
+        <div id="divProfileTabs">
+          <div id="divTab01">
+              <a id="aInfoTab" onclick="openInfoTab()">Box info</a>
+
+              <canvas id="cvUnderLine01"></canvas>
+          </div>
+
+          <div id="divTab02">
+              <a id="aTableTab" onclick="openTableTab()">Table</a>
+
+              <canvas id="cvUnderLine02"></canvas>
+          </div>
+
+          <div id="divTab03">
+            <a id="aChartTab" onclick="openChartTab()">Chart</a>
+
+            <canvas id="cvUnderLine03"></canvas>
+        </div>
+      </div>
+
+
+        <div id="divBody">
+          <div id="divBodyLeft">
+
+          </div>
+
+          <div id="divBodyRight">
+            <div  id="divTabInfo">
+              <button >Insert table</button>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-------popup here ---------->
+        <% include ../modules/popups%>
+
+      </div>
+</body>
+
+</html>

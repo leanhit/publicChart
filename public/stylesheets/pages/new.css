@@ -1,0 +1,97 @@
+#divSidebar{
+    width: 0%;
+    display: none;
+}
+
+#divMainBody{
+    position: fixed;
+    bottom: 0px;
+    right: 25%;
+
+    width: 50%;
+    height: 90%;
+
+}
+#cvFirstLine{
+    position: relative;
+    top: 5px;
+    right: 0px;
+
+    width: 100%;
+    height: 1px;
+    background-color: rgb(73, 71, 71);
+}
+#divMainBody> table{
+    position: relative;
+    width: 100%;
+    top: 15px;
+    border: 0px solid black;
+}
+
+table, td{
+    padding: 0px;
+    height: 25px;
+    border: 0px solid black;
+}
+
+#divNewBoxOwner{
+    position: relative;
+    height: 35px;
+    width: 150px;  
+    
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px; 
+
+    background-color: aquamarine;
+}
+
+#imgNewBoxUserAvatar{    
+    position: relative;
+    height: 24px;
+    width: 24px;
+  
+    margin-top: 5px;
+    margin-left: 20px;
+  
+    
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px; 
+}
+
+#aNewBoxUsername{
+    position: absolute;
+    margin-top: 8px;
+}
+
+#inBoxName{
+    width: 500px;
+    height: 25px;
+}
+
+#inBoxDescription{
+    width: 100%;
+    height: 40px;   
+
+    
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px; 
+}
+
+#btnCreateBox{
+    margin-top: 15px;
+    width: 150px;
+    height: 35px;   
+    
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px; 
+    
+    background-color: rgb(115, 115, 247);
+}

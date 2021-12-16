@@ -12,12 +12,20 @@ const baseUrl = 'mongodb://localhost:27017/';
 const userColection = 'users';
 const dbUser = 'userDB_';
 
+
 //define db of jswToken
 const refreshTokenCollection = 'refreshToken';
 
 //define db of pandoraBox
 const boxListsColection = 'boxLists';
+const boxTablesColection = 'boxTable';
+const boxDB = 'box_';
+const dbList = 'dbList';
+const isExitBoxName = true;
+const isBoxDatabaeCreated = true;
 
+const private = "private";
+const public = "public";
 
 module.exports = {
     jwtExpired: jwtExpired,
@@ -31,7 +39,14 @@ module.exports = {
     userColection: userColection,
     dbUser: dbUser,
     refreshTokenCollection: refreshTokenCollection,
+    boxDB: boxDB,
 
-    boxListsColection: boxListsColection
+    boxListsColection: boxListsColection,
+    boxTablesColection: boxTablesColection,
+    dbList: dbList,
+    isExitBoxName: isExitBoxName,
+    isBoxDatabaeCreated: isBoxDatabaeCreated,
+    private: private,
+    public: public
 
 }

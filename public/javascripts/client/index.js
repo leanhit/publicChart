@@ -1,45 +1,27 @@
-let divStartElement;
-let divMainElement;
-
-window.onload = function(){
+window.onload = function () {
     autoLogin();
-    setTimeout(() => {        
-        divStartElement = document.getElementById("divStart");
-        divMainElement = document.getElementById("divMain");
-    }, 1000);
 }
 
-socket.on('userLoginResult', (result) =>{
+
+socket.on('userLoginResult', (result) => {
+    loadPublicHTMLelement();
+  
     let loginStatus = result.loginStatus;
-    
-    divStartElement = document.getElementById("divStart");
-    divMainElement = document.getElementById("divMain");
-
-    
-
-    if(loginStatus === validResult){  
-        
-        socket.username = result.username;
-        document.getElementById("divStart").style.display = "none";
-        document.getElementById("divMain").style.display = "block";
-            
-        
-    }else{
-        //do nothing
+  
+    if (loginStatus === validResult) {
+      let username = result.username;
+      socket.username = username;
+      aTopbarUsername.textContent = username;
+  
+      eventOpenPage(aTopbarUsername, username);  
+      selectTopbarRight(true);
+    } else {
+        if(loginStatus === jwtExpired){
+            alert("Token is exprired");
+        }
+      selectTopbarRight(false);
     }
-});
+  });
 
-
-
-function openLoginPage(){
-    openPage('/login');
-  }
-  
-  function openRegistryPage(){
-    openPage('/registry');
-  }
-
-  
-function openProfile(){
-    openPage(socket.username);
-}
+/*---------------------code of topbar block ------------------*/
+getPositionClick();
