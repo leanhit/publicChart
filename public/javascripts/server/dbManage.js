@@ -71,9 +71,8 @@ function insertBoxToLists(boxInfo) {
                                 boxName: boxName,
                                 boxType: boxType,
                                 boxDescription: boxDescription,
-                                tablesNumber: 0,
                                 tablesName: [],
-                                tablesID:[],
+                                tablesID: [],
                                 created: new Date(),
                                 lastEdit: new Date
                             };
@@ -114,7 +113,6 @@ function getBoxesList(request) {
                 dbo.collection(defineVal.boxListsColection).find(queryJson).sort({ "created": -1 }).toArray(function (err, boxes) {
                     if (err) reject(err);
                     else {
-                        console.log(queryJson, boxes)
                         resolve(boxes);
                         db.close();
                     }
@@ -124,36 +122,81 @@ function getBoxesList(request) {
     });
 }
 
-function createBoxDatabase(boxInfo) {
-    let owner = boxInfo.owner;
-    let boxName = boxInfo.boxName;
-    let boxType = boxInfo.boxType;
-    let boxDescription = boxInfo.boxDescription;
+function updateBoxInfo(tableInfo, tableID) {
+    let username = tableInfo.boxOwner;
+    let boxName = tableInfo.boxName;
+    let tableName = tableInfo.tableName;
 
-    console.log(boxInfo)
     return new Promise((resolve, reject) => {
-        let boxDatabaseName = defineVal.boxDB + owner + '_' + boxName;
+
+        MongoClient.connect(defineVal.baseUrl, function (err, db) {
+            if (err) {
+                reject(err);
+            } else {
+                const dbName = defineVal.dbUser + username;
+                var dbo = db.db(dbName);
+                dbo.collection(defineVal.boxListsColection).findOne({ boxName: boxName }, function (err, pBox) {
+                    if (err) reject(err);
+                    else {
+                        if (pBox == null) {  //can't find boxName in chat list of boxName           
+
+                        } else {//find out
+                            let tablesNameNew = pBox.tablesName;
+                            let tablesIDNew = pBox.tablesID;
+
+                            tablesNameNew[tablesNameNew.length] = tableName;
+                            tablesIDNew[tablesIDNew.length] = tableID;
+
+                            let updateQuery = {
+                                tablesName: tablesNameNew,
+                                tablesID: tablesIDNew,
+                                lastEdit: new Date()
+                            }
+
+                            dbo.collection(defineVal.boxListsColection).findOneAndUpdate({ boxName: boxName },
+                                { $set: updateQuery }, function (err, res) {
+                                    if (err) reject(err);
+                                    else {
+                                        //console.log(res)
+                                        resolve(res);
+                                        db.close();
+                                    }
+                                });
+                        }
+                    }
+                });
+
+            }
+        });
+    });
+}
+
+function insertTableToBox(tableInfo) {
+    let username = tableInfo.head.boxOwner;
+    let boxName = tableInfo.head.boxName;
+
+    return new Promise((resolve, reject) => {
         MongoClient.connect(defineVal.baseUrl, function (err, db) {
             if (err)
                 reject(err);
             else {
-                var dbo = db.db(boxDatabaseName);
-                var newDetailBox = {
-                    boxName: boxName,
-                    boxType: boxType,
-                    boxDescription: boxDescription,
-                    TableNumber: 0,
-                    TablesList: "",
+                const dbName = defineVal.dbUser + username;
+                var dbo = db.db(dbName);
+                let tableName = tableInfo.head.tableName;
+                var newTable = {
+                    tableName: tableName,
+                    tableData: tableInfo.tableContent,
                     created: new Date(),
                     lastEdit: new Date()
                 }
-                dbo.collection(defineVal.boxTablesColection).insertOne(newDetailBox, function (err, res) {
+                dbo.collection(defineVal.boxTablesColection + boxName).insertOne(newTable, function (err, res) {
                     if (err) {
                         throw err;
                     }
                     else {
-                        console.log("Database " + boxDatabaseName + " was created!");
-                        resolve(res._id);
+                        console.log(tableName + " off " + boxName + " was add!");
+
+                        resolve(res.insertedId);
                         db.close();
                     }
                 });
@@ -162,11 +205,11 @@ function createBoxDatabase(boxInfo) {
     });
 }
 
-function getBoxDetail(request) {    
+function getBoxDetail(request) {
     let boxName = request.boxName;
     let username = request.owner;
-    
-    let queryJson = {boxName: boxName};
+
+    let queryJson = { boxName: boxName };
 
     return new Promise((resolve, reject) => {
         MongoClient.connect(defineVal.baseUrl, function (err, db) {
@@ -187,6 +230,39 @@ function getBoxDetail(request) {
     });
 }
 
+var ObjectId = require('mongodb').ObjectId; 
+
+
+
+function getTableDetail(tableInfo) {
+    let username = tableInfo.boxOwner;
+    let boxName = tableInfo.boxName;
+    
+    let queryJson = {"_id": ObjectId(tableInfo.tableID)}      
+
+
+    return new Promise((resolve, reject) => {
+        MongoClient.connect(defineVal.baseUrl, function (err, db) {
+            if (err)
+                reject(err);
+            else {
+                const dbName = defineVal.dbUser + username;
+                var dbo = db.db(dbName);
+                dbo.collection(defineVal.boxTablesColection + boxName).findOne(queryJson, function (err, table) {
+                    if (err) {
+                        throw err;
+                    }
+                    else {
+                        resolve(table);
+                        db.close();
+                    }
+                });
+            }
+        });
+    });
+}
+
+
 
 
 
@@ -196,8 +272,10 @@ function getBoxDetail(request) {
 module.exports = {
     checkExitsUser: checkExitsUser,
     checkExitsBox: checkExitsBox,
-    createBoxDatabase: createBoxDatabase,
+    insertTableToBox: insertTableToBox,
     insertBoxToLists: insertBoxToLists,
     getBoxesList: getBoxesList,
-    getBoxDetail:getBoxDetail
+    getBoxDetail: getBoxDetail,
+    updateBoxInfo: updateBoxInfo,
+    getTableDetail: getTableDetail
 }

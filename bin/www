@@ -133,7 +133,6 @@ io.on('connection', (client) => {
 
   client.on('userLogin', (loginInfo) => {
     const usname = loginInfo.username;
-    console.log(usname);
 
     let userRefreshToken = jwToken.getRefreshToken(usname);
     userRefreshToken.catch((err) => {
@@ -238,7 +237,6 @@ io.on('connection', (client) => {
       username: username
     }
     client.emit('userLoginResult', resultInfo);
-    console.log("result client");
   }
 
 
@@ -249,7 +247,6 @@ io.on('connection', (client) => {
   client.on('registryUser', function (loginInfo) {
     var usn = loginInfo.username;
     var psw = loginInfo.password;
-    console.log(usn + "  " + psw)
 
     //check username exit
     MongoClient.connect(defineVal.baseUrl, function (err, db) {
@@ -263,7 +260,6 @@ io.on('connection', (client) => {
             throw err;
           }
           else {
-            console.log(user?.username.length > 0);
             if (user?.username.length > 0) {
               //result verification to client
               client.emit('registryUserResult', defineVal.invalidResult);
@@ -353,16 +349,14 @@ io.on('connection', (client) => {
       getBoxesListResult({ resultType: false });
     }).then((boxesList) => {
       if (boxesList === null) {
-        console.log(boxesList);
+        // console.log(boxesList);
         getBoxesListResult({ resultType: false });
       } else if (typeof (boxesList) === 'undefined') {
         getBoxesListResult({ resultType: false });
       } else {
         getBoxesListResult({ resultType: true, boxesList });
       }
-
     });
-
   });
 
   function getBoxesListResult(result) {
@@ -370,7 +364,7 @@ io.on('connection', (client) => {
   }
 
   client.on('getBoxDetail', (request) => {
-    console.log(request)
+
     let owner = request.owner;
 
     let boxObj = dbManage.getBoxDetail(request);
@@ -390,7 +384,6 @@ io.on('connection', (client) => {
         };
       } else if (boxDetail !== null) {
         let boxType = boxDetail.boxType;
-        console.log((owner !== client.username) ,boxType,  (boxType == defineVal.private))
         if ((owner !== client.username) && (boxType === defineVal.private)) {
           result = {
             resultType: false,
@@ -401,6 +394,7 @@ io.on('connection', (client) => {
             resultType: true,
             boxDetail: editBoxDetail(boxDetail)
           };
+          //console.log(result)
         }
       } else {
         result = {
@@ -408,22 +402,92 @@ io.on('connection', (client) => {
           boxDetail: null
         }
       }
-      console.log(result);
       client.emit('getBoxDetailResult', result);
     });
   });
 
-  function editBoxDetail(boxDetail){
-    return  {
+  function editBoxDetail(boxDetail) {
+    let tablesList = [];
+    for (var i = 0; i < boxDetail.tablesID.length; i++) {
+      let tableNode = {
+        tableName: boxDetail.tablesName[i],
+        tableID: boxDetail.tablesID[i]
+      }
+      tablesList.push(tableNode);
+      //console.log(boxDetail,tableNode)
+    }
+
+    return {
       boxName: boxDetail.boxName,
       boxType: boxDetail.boxType,
       boxDescription: boxDetail.boxDescription,
-      tablesNumber: boxDetail.tablesNumber,
-      tablesName: boxDetail.tablesName,
+      tablesList: tablesList,
       created: boxDetail.created,
       lastEdit: boxDetail.lastEdit
     }
   }
+
+  client.on('createNewTable', tableInfo => {
+    let boxOwner = tableInfo.head.boxOwner;
+    if (boxOwner === client.username) {
+
+      //1.insert new table to box colection, return box id
+      tableObj = dbManage.insertTableToBox(tableInfo);
+      tableObj.catch(err => {
+        console.log(err);
+        createTableResult(false);
+      }).then(tableID => {
+        if (typeof (tableInfo) !== "undefined") {
+          //2. inset information of this new box to box detail with the id
+          let updateObj = dbManage.updateBoxInfo(tableInfo.head, tableID);
+          updateObj.catch(err => {
+            console.log(err);
+            createTableResult(false);
+          }).then(() => {
+            createTableResult(true);
+          });
+        }
+
+
+      });
+    }
+  });
+
+  function createTableResult(result) {
+    client.emit('createNewTableResult', result);
+  }
+
+  client.on('getTableDetail', tableInfo => {
+    
+    let tableObj = dbManage.getTableDetail(tableInfo);
+    tableObj.catch(err => {
+      console.log(err);
+      getTableDetailResult({
+        resultType: false,
+        resultInfo: null
+      });
+    }).then(tableDetail => {
+      getTableDetailResult({
+        resultType: true,
+        resultInfo: tableDetail
+      });
+    });
+  });
+
+  function getTableDetailResult(result) {
+    client.emit('getTableDetailResult', result);
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   client.on('disconnect', () => {
     console.log('user disconnected');

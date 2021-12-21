@@ -18,7 +18,7 @@ const refreshTokenCollection = 'refreshToken';
 
 //define db of pandoraBox
 const boxListsColection = 'boxLists';
-const boxTablesColection = 'boxTable';
+const boxTablesColection = 'boxTable_';
 const boxDB = 'box_';
 const dbList = 'dbList';
 const isExitBoxName = true;

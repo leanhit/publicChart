@@ -9,7 +9,7 @@
   <% include ../modules/header%>
 
     <!---------private-------------->
-
+    <script src="https://unpkg.com/read-excel-file@4.x/bundle/read-excel-file.min.js"></script>
     <link rel='stylesheet' href='/stylesheets/pages/box.css' />
     <script src="/javascripts/client/pages/box.js"></script>
 
@@ -38,36 +38,64 @@
 
         <div id="divProfileTabs">
           <div id="divTab01">
-              <a id="aInfoTab" onclick="openInfoTab()">Box info</a>
+            <a id="aInfoTab" onclick="openInfoTab()">Box info</a>
 
-              <canvas id="cvUnderLine01"></canvas>
+            <canvas id="cvUnderLine01"></canvas>
           </div>
 
           <div id="divTab02">
-              <a id="aTableTab" onclick="openTableTab()">Table</a>
+            <a id="aTableTab" onclick="openTableTab()">Table</a>
 
-              <canvas id="cvUnderLine02"></canvas>
+            <canvas id="cvUnderLine02"></canvas>
           </div>
 
           <div id="divTab03">
             <a id="aChartTab" onclick="openChartTab()">Chart</a>
 
             <canvas id="cvUnderLine03"></canvas>
+          </div>
         </div>
-      </div>
 
 
         <div id="divBody">
           <div id="divBodyLeft">
-
           </div>
 
           <div id="divBodyRight">
-            <div  id="divTabInfo">
-              <button >Insert table</button>
+            <!------------tab box info----------->
+            <div id="divTabInfo">
+              <h5>Open excel file to insert new table</h5>
+              <input type="file" id="inReadExcelFile" onchange="readExcelFile()" />
+
 
             </div>
+            
+          <!--------------div table------------->
+          <div id="divNewTable">
+            <div id="divNewTableHead">
+              <label>Table Name</label>
+              <input type="text" id="inNewTableName" placeholder="Table Name">
+            </div>
+            <table id="tblNewTable">
+
+            </table>
+            <button id="btnCreateTable" onclick="createNewTable()">Create</button>
           </div>
+
+          <!--------------div table------------->
+          <div id="divNewTable">
+            <div id="divNewTableHead">
+              <label>Chart name</label>
+              <input type="text" id="inNewChartName" placeholder="Chart Name">
+            </div>
+            <canvas id="cvChart"></canvas>
+            <button id="btnCreateChart" onclick="createNewChart()">Create</button>
+          </div>
+          </div>
+
+
+
+          
 
         </div>
 
