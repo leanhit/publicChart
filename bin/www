@@ -366,45 +366,48 @@ io.on('connection', (client) => {
   client.on('getBoxDetail', (request) => {
 
     let owner = request.owner;
-
     let boxObj = dbManage.getBoxDetail(request);
-    let result = '';
 
     boxObj.catch((err) => {
       console.log(err)
-      result = {
+      getBoxDetailResult({
         resultType: false,
         boxDetail: null
-      };
+      });
     }).then((boxDetail) => {
       if (typeof (boxDetail) === 'undefined') {
-        result = {
+        getBoxDetailResult({
           resultType: false,
           boxDetail: null
-        };
+        });
       } else if (boxDetail !== null) {
         let boxType = boxDetail.boxType;
         if ((owner !== client.username) && (boxType === defineVal.private)) {
-          result = {
+          getBoxDetailResult({
             resultType: false,
             boxDetail: null
-          };
+          });
         } else {
-          result = {
+          getBoxDetailResult({
             resultType: true,
             boxDetail: editBoxDetail(boxDetail)
-          };
+          });
           //console.log(result)
         }
       } else {
-        result = {
+        getBoxDetailResult({
           resultType: false,
           boxDetail: null
-        }
+        });
       }
-      client.emit('getBoxDetailResult', result);
+
     });
   });
+
+  function getBoxDetailResult(result) {
+    client.emit('getBoxDetailResult', result);
+  }
+
 
   function editBoxDetail(boxDetail) {
     let tablesList = [];
@@ -428,9 +431,10 @@ io.on('connection', (client) => {
   }
 
   client.on('createNewTable', tableInfo => {
+    console.log(tableInfo);
     let boxOwner = tableInfo.head.boxOwner;
     if (boxOwner === client.username) {
-
+      console.log(tableInfo);
       //1.insert new table to box colection, return box id
       tableObj = dbManage.insertTableToBox(tableInfo);
       tableObj.catch(err => {
@@ -458,7 +462,7 @@ io.on('connection', (client) => {
   }
 
   client.on('getTableDetail', tableInfo => {
-    
+
     let tableObj = dbManage.getTableDetail(tableInfo);
     tableObj.catch(err => {
       console.log(err);
@@ -478,7 +482,10 @@ io.on('connection', (client) => {
     client.emit('getTableDetailResult', result);
   }
 
-
+//===---------create chart------------
+client.on('createChart', chartInfo=>{
+  console.log(chartInfo)
+})
 
 
 

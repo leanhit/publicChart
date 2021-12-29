@@ -16,6 +16,7 @@ function autoLogin(currentPage) {
     }else if(currentPage === boxPage){
       loadBoxPageElement();
       getBoxDetail();
+      unloginHideEle();
     }
   }
 }
@@ -81,6 +82,7 @@ function showOneDiv(divShow) {
   divTopbarMainMenu.style.display = "none";
 
   divShow.style.display = "block";
+  
 }
 
 function closeDivByOutSideDivClick(xPoint, yPoint) {
@@ -97,6 +99,7 @@ function closeDivByOutSideDivClick(xPoint, yPoint) {
   } else {
     currentActiveDiv.style.display = 'none';
     currentActiveDiv = divCoverAll;
+    divCoverAll.style.display = 'block';
   }
 
 }
@@ -166,45 +169,15 @@ function openTopbarMainMenu1() {
 }
 
 
+function setPositionCenter(parentEle, childEle) {
+  let widthDivPar = parentEle.offsetWidth;
+  let widthDivChi = childEle.offsetWidth;
+
+  let temp = (widthDivPar - widthDivChi);
+  if (temp > 0)
+      childEle.style.marginLeft = (temp - (temp % 2)) / 2 + 'px';
+
+}
 
 
 //------------------------------------
-
-function drawChart(chartElement, type, Data, Option) {
-  new Chart(chartElement, {
-    type: type,
-    data: {
-      labels: Data.labels,
-      datasets: Data.datasets
-    },
-    options: {
-      title: {
-        display: Option.title.display,
-        text: Option.title.text
-      }
-    }
-  });
-}
-
-function createChart() {
-  let myChart = document.getElementById("myChart").getContext('2d');
-
-  new Chart(myChart, {
-    type: 'pie',
-    data: {
-      labels: ["Châu Phi", "Châu Á", "Châu Âu", "Châu Mỹ Latin", "Bắc Mỹ"],
-      datasets: [{
-        label: "đơn vị (triệu người)",
-        backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
-        data: [2478, 5267, 734, 784, 433]
-      }]
-    },
-    options: {
-      title: {
-        display: true,
-        text: 'Biểu đồ tỷ lệ dân số thế giới'
-      }
-    }
-  });
-}
-

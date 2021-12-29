@@ -168,7 +168,6 @@ function showTablesList(body, tblList) {
 }
 
 function getTableDetail(tbName, tableID) {
-
     tbName.addEventListener('click', clickEle);
     function clickEle() {
         arrayTd.forEach(td => {
@@ -176,13 +175,12 @@ function getTableDetail(tbName, tableID) {
         });
 
         tbName.style.color = 'red';
-        currentTableID = tableID;
         let tableInfo = {
             boxOwner: currentOwner,
             boxName: currentBox,
-            tableID: currentTableID
+            tableID: tableID
         }
-
+        currentTableID = tableID;
         showTab(cvUnderLine02, divNewTable);
 
         socket.emit('getTableDetail', tableInfo);
@@ -343,7 +341,7 @@ let divChartOffer;
 let divFirstStep;
 let divSecondStep;
 let divThirdStep;
-let divFourthStep;
+let divLastStep;
 let btnShowCreateNewChart;
 let divChartName;
 let inChartName;
@@ -356,7 +354,7 @@ function loadNewChartElement() {
     divFirstStep = document.getElementById("divFirstStep");
     divSecondStep = document.getElementById("divSecondStep");
     divThirdStep = document.getElementById("divThirdStep");
-    divFourthStep = document.getElementById("divFourthStep");
+    divLastStep = document.getElementById("divLastStep");
     btnShowCreateNewChart = document.getElementById("btnShowCreateNewChart");
     divChartName = document.getElementById("divChartName");
     inChartName = document.getElementById("inChartName");
@@ -379,20 +377,16 @@ function showCreateNewChar() {
 }
 
 let chartName = '';
-let isChartType = false;
+let chartType = '';
 let labelsList;
 let notesList;
 let datasetsSelected = '';
 let rowSelected = 0;
 let columsSelected = '';
-let columNodeSelect = 0;
 
 function firstNext() {
     chartName = inChartName.value;
-    if ((slChartType.value === "bar") || (slChartType.value === "line"))
-        isChartType = true;
-    else
-        isChartType = false;
+    chartType = slChartType.value;
 
 
     divFirstStep.style.display = 'none';
@@ -407,24 +401,18 @@ function firstNext() {
     showDataChoiceLabel(tblChoiceLabels, tableData, slDataFrom.value);
 }
 
+function selectDataFrom() {
+    let slDataFrom = document.getElementById("slDataFrom");
+    showDataChoiceLabel(tblChoiceLabels, tableData, slDataFrom.value);
+}
 
-let rbList = [];
 function showDataChoiceLabel(tableName, datum, dtFrom) {
     if (dtFrom === 'dfRow') {
         tableName.innerHTML = '';
         var tbdyHead = document.createElement('tbody');
         tableName.appendChild(tbdyHead);
-
-
-        if (isChartType) {
-            rbList = [];
-            //insert row radiobutton to choice node list
-            createRowRadiobutton(tbdyHead, "rbNote");
-        }
-
-
         //insert colum check box
-        createRowCheckBox(tbdyHead, 'cbLabel');
+        createRowCheckBox(tbdyHead);
         let index = 1;
         datum.forEach(row => {
             var tbdy = document.createElement('tbody');
@@ -451,52 +439,6 @@ function showDataChoiceLabel(tableName, datum, dtFrom) {
         tableName.innerHTML = '';
         alert('lllllll')
     }
-}
-
-function createRowRadiobutton(tbody, rbName) {
-    //create row
-    var tr = document.createElement('tr');
-
-    for (var i = 0; i < maxRowNumber + 2; i++) {
-
-        //Index colum
-        var tdRadio = document.createElement('td');
-        if (i === 0) {
-            tdRadio.appendChild(document.createTextNode(''));
-            tdRadio.style.border = '0px';
-            tdRadio.style.width = '5px';
-        } else {
-            var radiobutton = document.createElement('input');
-            radiobutton.setAttribute('type', 'radio');
-            radiobutton.setAttribute('name', rbName);
-            radiobutton.setAttribute('value', i);
-            rbList.push(radiobutton);
-
-            radiobutton.addEventListener('change', radioClick)
-            function radioClick() {
-                rbList.forEach(rb => {
-
-                    if (rb.checked === true) {
-                        columNodeSelect = rb.value;
-                        disableSelectedNoteColum(rb.value);
-
-                    }
-                })
-            }
-            if (i == 1) {
-
-                radiobutton.click();
-                columNodeSelect = 1;
-            }
-
-
-            tdRadio.appendChild(radiobutton);
-            tdRadio.style.width = '100px';
-        }
-        //add cell to row
-        tr.appendChild(tdRadio);
-    }
-    tbody.appendChild(tr);
 }
 
 function createColumRadioButton(tr, value, radiobuttonName) {
@@ -527,24 +469,7 @@ function createColumRadioButton(tr, value, radiobuttonName) {
     tr.appendChild(tdSelect);
 }
 
-function disableSelectedNoteColum(columIndex) {
-
-
-    var checkbox = document.getElementsByName('cbLabel');
-
-    // Lặp qua từng checkbox để lấy giá trị
-    for (var i = 0; i < checkbox.length; i++) {
-        //console.log(i, columIndex)
-        if (i == columIndex - 1) {
-            checkbox[i].checked = false;
-            checkbox[i].style.display = 'none';
-        } else {
-            checkbox[i].style.display = 'block';
-        }
-    }
-}
-
-function createRowCheckBox(tbody, cbName) {
+function createRowCheckBox(tbody) {
     //create row
     var tr = document.createElement('tr');
 
@@ -559,25 +484,13 @@ function createRowCheckBox(tbody, cbName) {
         } else {
             var checkbox = document.createElement('input');
             checkbox.setAttribute('type', 'checkbox');
-            checkbox.setAttribute('name', cbName);
+            checkbox.setAttribute('name', 'cbLabel');
             //checkbox.setAttribute('value', i);
             checkbox.addEventListener('change', checkboxClick)
             function checkboxClick() {
                 //writing...
             }
-            //hide checkbox of selected node colum
-            if (isChartType) {
-                if (i === columNodeSelect) {
-                    checkbox.style.display = 'none';
-                    checkbox.checked = false;
-                }
-                else {
-                    checkbox.checked = true;
-                }
-            } else {
-                checkbox.checked = true;
-            }
-
+            checkbox.checked = true;
 
             tdCheckBox.appendChild(checkbox);
             tdCheckBox.style.width = '100px';
@@ -606,8 +519,9 @@ function secondNext() {
     //console.log('columsSelected: ' + columsSelected);
     //console.log('rowSelected: ' + rowSelected);
 
-    notesList = getNotesSelected(columNodeSelect - 1);
+
     labelsList = getLabelsSelected(rowSelected);
+    notesList = getNotesSelected(rowSelected);
     tableDatumSelected = getTableDatumSelected(rowSelected);
 
 
@@ -622,17 +536,7 @@ function secondNext() {
     inDatasetComment.defaultValue = "nocomment";
     showDataChoiceDatases(tblChoiceDataset, tableDatumSelected);
 
-}
 
-function getNotesSelected(columNumber) {
-    tempDatum = [];
-    for (var rowIndex = 1; rowIndex < tableData.length; rowIndex++) {
-
-        let temp = tableData[rowIndex][columNumber];
-        tempDatum.push(temp);
-
-    }
-    return tempDatum;
 }
 
 function getLabelsSelected(rowSelectedLabels) {
@@ -646,7 +550,18 @@ function getLabelsSelected(rowSelectedLabels) {
     return tempLabels;
 }
 
-let tableDatumSelected = [];
+
+function getNotesSelected(rowSelectedLabels) {
+    let tempNotes = [];
+    let temp = tableData[rowSelectedLabels - 1];
+    for (var i = 0; i < temp.length; i++) {
+        if (columsSelected[i] !== 'on') {
+            tempNotes.push(temp[i]);
+        }
+    }
+    return tempNotes;
+}
+
 function getTableDatumSelected(rowSelectedLabels) {
     tempDatum = [];
     for (var rowIndex = 0; rowIndex < tableData.length; rowIndex++) {
@@ -665,22 +580,21 @@ function getTableDatumSelected(rowSelectedLabels) {
     //console.log(tableDatumSelected);
 }
 
+const piceChart = 'pice';
+const lineChart = 'line';
+const barChart = 'bar';
+const doughnutChart = 'doughnut';
+
 function showDataChoiceDatases(tableName, datum) {
     tableName.innerHTML = '';
-    addLabels(tableName);
+    addLabels(tableName, labelsList);
 
     for (var rowIndex = 0; rowIndex < datum.length; rowIndex++) {
         var tbdy = document.createElement('tbody');
         //create row
         var tr = document.createElement('tr');
-        if (isChartType) {
-            //create note cell
-            var tdNote = document.createElement('td');
-            tdNote.appendChild(document.createTextNode(notesList[rowIndex]));
-            tr.appendChild(tdNote);
-            //create checkbox cell
+        if ((chartType === lineChart) || (chartType === barChart))
             createColumCheckBox(tr, rowIndex);
-        }
         else
             createColumRadioButton(tr, rowIndex, 'slDataset');
 
@@ -702,25 +616,62 @@ function showDataChoiceDatases(tableName, datum) {
 
 }
 
-function addLabels(tableName) {
-    var tbdy = document.createElement('tbody');
+
+function showNoteList(tableName) {
+    tableName.innerHTML = '';
+    addLabels(tableName, notesList);
+    createRowRadiobutton(tableName, 'rbNote');
+
+}
+
+
+function createRowRadiobutton(tbody, radiobuttonName) {
     //create row
     var tr = document.createElement('tr');
 
-    if (isChartType) {
-        var emptyTd = document.createElement('td');
-        emptyTd.style.border = '2px';
-        tr.appendChild(emptyTd)
+    for (var i = 0; i < notesList; i++) {
+
+        //Index colum
+        var tdRadio = document.createElement('td');
+        if (i === 0) {
+            tdRadio.appendChild(document.createTextNode(''));
+            tdRadio.style.border = '0px';
+            tdRadio.style.width = '5px';
+        } else {
+            var radiobutton = document.createElement('input');
+            radiobutton.setAttribute('type', 'radio');
+            radiobutton.setAttribute('name', radiobuttonName);
+            //checkbox.setAttribute('value', i);
+            radiobutton.addEventListener('change', radioClick)
+            function radioClick() {
+                //writing...
+            }
+            if(i ==1)
+            radiobutton.checked
+
+
+            tdRadio.appendChild(checkbox);
+            tdRadio.style.width = '100px';
+        }
+        //add cell to row
+        tr.appendChild(tdRadio);
     }
+    tbody.appendChild(tr);
+}
+
+function addLabels(tableName, headsList) {
+    var tbdy = document.createElement('tbody');
+    //create row
+    var tr = document.createElement('tr');
 
     var emptyTd = document.createElement('td');
     emptyTd.style.border = '2px';
     tr.appendChild(emptyTd)
 
-    for (var i = 0; i < labelsList.length; i++) {
+    for (var i = 0; i < headsList.length; i++) {
         //Index colum
         var tdIndex = document.createElement('td');
-        tdIndex.appendChild(document.createTextNode(labelsList[i]));
+        tdIndex.appendChild(document.createTextNode(headsList[i]));
         //add cell to row
         tr.appendChild(tdIndex);
     }
@@ -728,10 +679,6 @@ function addLabels(tableName) {
     tbdy.appendChild(tr);
     tableName.appendChild(tbdy);
 }
-
-
-
-
 
 function createColumCheckBox(tr, checkPosition) {
     //create select row
@@ -758,37 +705,45 @@ function createColumCheckBox(tr, checkPosition) {
 let datasets;
 function thirdNext() {
     datasets = [];
-    if (isChartType) {
-        notesList = getSelectedNotesList()
+    if ((chartType === lineChart) || (chartType === barChart)) {
+
         let rows = getRowSelectedDatasets();
         rows.forEach(rowIndex => {
-
             datasets.push(getDatasetsSelected(rowIndex));
         });
 
     } else {
+
         datasets.push(getDatasetsSelected(rowSelected));
+
     }
 
+    if ((chartType === lineChart) || (chartType === barChart)) {
 
-    divThirdStep.style.display = 'none';
-    divFourthStep.style.display = 'block';
+        let tblChoiceNote = document.getElementById("tblChoiceNote");
+        showNoteList(tblChoiceNote);
 
-    setupChart();
+        divThirdStep.style.display = 'none';
+        divFourthStep.style.display = 'block';
+        divFourthStep.style.width = '100%';
+        divFourthStep.style.height = '100%';
+        divFourthStep.style.overflow = 'scroll';
+
+    } else {
+        lastNext(divThirdStep);
+    }
+
 }
 
+function lastNext(currentDiv) {
 
-function getSelectedNotesList() {
-    let temp = [];
-    var checkbox = document.getElementsByName('cbDataset');
+    currentDiv.style.display = 'none';
+    divLastStep.style.display = 'block';
+    divLastStep.style.width = '50%';
+    divLastStep.style.height = '100%';
+    //divLastStep.style.overflow = 'scroll';
 
-    // Lặp qua từng checkbox để lấy giá trị
-    for (var i = 0; i < checkbox.length; i++) {
-        if (checkbox[i].checked === true) {
-            temp.push(notesList[i]);
-        }
-    }
-    return temp;
+    setupChart();
 }
 
 function getRowSelectedDatasets() {
@@ -816,39 +771,28 @@ function getDatasetsSelected(rowSelectedDatasets) {
     //console.log(tableDatumSelected);
 }
 
-function getColorsList(colorNumber) {
-    let colorsList = ['aqua', 'yellow', 'green', 'pink', 'blue', 'violet', 'grey', 'orange', 'red'];
-    if (isChartType)
+let colorsList = ['red', 'blue', 'green', 'yellow', 'pink', 'violet', 'grey', 'orange', 'aqua'];
 
-        return colorsList[colorNumber];
-    else
-        return colorsList.splice(0, colorNumber);
+function getColorsList(colorNumber) {
+    return colorsList.splice(0, colorNumber);
+}
+
+function getColorsNote(colorIndex) {
+    return colorsList.splice(colorIndex, 1);
 }
 
 function makeDataset(datum) {
     let temp = [];
-    if (isChartType) {
+    if ((chartType === barChart) || (chartType === lineChart)) {
         let noteIndex = 0;
         datum.forEach(data => {
             let note = notesList[noteIndex];
-            let aSet;
-            if(slChartType.value === "line"){
-                aSet = {
-                    label: note,
-                    borderColor: getColorsList(noteIndex),
-                    data: data,
-                    fill: false
-                }
-            }else{
-                aSet = {
-                    label: note,
-                    backgroundColor: getColorsList(noteIndex),
-                    data: data
-                }
+            let aSet = {
+                label: note,
+                backgroundColor: getColorsNote(noteIndex),
+                data: data
             }
-            
             temp.push(aSet);
-            
             noteIndex++;
         });
     } else {
@@ -882,12 +826,12 @@ function setupChart() {
 
 
     let cvChart = document.getElementById("cvChart");
-    drawChart(cvChart, slChartType.value, data, options)
+    drawChart(cvChart, chartType, data, options)
 }
 
-let finalData;
+
 function drawChart(chartElement, type, Data, Option) {
-    finalData = {
+    let finalData = {
         type: type,
         data: {
             labels: Data.labels,
@@ -900,7 +844,7 @@ function drawChart(chartElement, type, Data, Option) {
             }
         }
     };
-
+    console.log(finalData)
     new Chart(chartElement, finalData);
 }
 
@@ -929,7 +873,7 @@ function createChart1() {
             labels: ["Châu Phi", "Châu Á", "Châu Âu", "Châu Mỹ Latin", "Bắc Mỹ"],
             datasets: [{
                 label: "đơn vị (triệu người)",
-                backgroundColor: getColorsList(labelsList.length),
+                backgroundColor: getColorsList(5),
                 data: [2478, 5267, 734, 784, 433]
             }]
         },
@@ -941,7 +885,6 @@ function createChart1() {
         }
     });
 }
-
 
 function createChart2() {
     new Chart(document.getElementById("cvChart"), {
@@ -970,8 +913,6 @@ function createChart2() {
 
 }
 
-
-
 function stepDisplay(currentDiv, stepDiv) {
     currentDiv.style.display = 'none';
     stepDiv.style.display = 'block';
@@ -989,5 +930,5 @@ function secondPreview() {
 
 
 function renew() {
-    stepDisplay(divFourthStep, divFirstStep);
+    stepDisplay(divLastStep, divFirstStep);
 }
