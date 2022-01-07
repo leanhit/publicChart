@@ -19,6 +19,7 @@ const refreshTokenCollection = 'refreshToken';
 //define db of pandoraBox
 const boxListsColection = 'boxLists';
 const boxTablesColection = 'boxTable_';
+const boxChartColection = 'boxChart_';
 const boxDB = 'box_';
 const dbList = 'dbList';
 const isExitBoxName = true;
@@ -43,6 +44,7 @@ module.exports = {
 
     boxListsColection: boxListsColection,
     boxTablesColection: boxTablesColection,
+    boxChartColection:boxChartColection,
     dbList: dbList,
     isExitBoxName: isExitBoxName,
     isBoxDatabaeCreated: isBoxDatabaeCreated,

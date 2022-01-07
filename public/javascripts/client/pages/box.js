@@ -204,6 +204,9 @@ socket.on('getTableDetailResult', result => {
         showTab(cvUnderLine02, divNewTable);
         //show this table data
         rangeData(tableName, tableData);
+        //add chartsList
+        addChartsList(result.resultInfo.chartsID, result.resultInfo.chartsName);
+
         //active button tocreate new chart
         loadNewChartElement();
         if (socket.username === currentOwner)
@@ -230,6 +233,7 @@ function cutFileName(fullName) {
     let dotPosition = fullName.lastIndexOf('.');
     return fullName.slice(0, dotPosition);
 }
+
 
 let excelData = '';
 //get max of row number of the table
@@ -351,6 +355,7 @@ let inNoteDataset;
 let tblChoiceLabels;
 let tblChoiceDataset;
 let slDataFrom;
+let btnSaveChart;
 
 function loadNewChartElement() {
     divChartsList = document.getElementById("divChartsList");
@@ -367,6 +372,7 @@ function loadNewChartElement() {
     tblChoiceLabels = document.getElementById("tblChoiceLabels");
     tblChoiceDataset = document.getElementById("tblChoiceDataset");
     slDataFrom = document.getElementById("slDataFrom");
+    btnSaveChart = document.getElementById("btnSaveChart");
 
     inChartName.defaultValue = 'new Chart';
 }
@@ -382,6 +388,7 @@ function showCreateNewChar() {
 
 let chartName = '';
 let isChartType = false;
+let chartType = "doughnut";
 let labelsList;
 let notesList;
 let datasetsSelected = '';
@@ -390,14 +397,16 @@ let arrCbData = [];
 let notePoint = 0;
 let rbNoteList = [];
 let rbLabelList = [];
-let datasets;
+let finalData;
 let tableDatumSelected = [];
+let isSDFR = true;
 
 const cbData = 'cbData';
 
 function firstNext() {
     chartName = inChartName.value;
-    if ((slChartType.value === "bar") || (slChartType.value === "line"))
+    chartType = slChartType.value;
+    if ((chartType === "bar") || (chartType === "line"))
         isChartType = true;
     else
         isChartType = false;
@@ -544,7 +553,7 @@ function addRbCellNote(tr, rbName, rbValue) {
         })
     }
 
-    if (slDataFrom.value == "row") {
+    if (isSDFR) {
         if (rbValue == 1) {
             radiobutton.click();
             notePoint = 1;
@@ -579,7 +588,7 @@ function addRbCell(tr, rbName, rbValue) {
     }
 
     if (rbValue === 0 || rbValue === 1 ||
-        (rbValue === 2 && !(slDataFrom.value === "row"))) {
+        (rbValue === 2 && !(isSDFR))) {
         radioSelect.click();
         labelPoint = rbValue;
 
@@ -613,8 +622,8 @@ function disableSelectedNote(cbIndex) {
 
     // Lặp qua từng checkbox để lấy giá trị
     for (var i = 0; i < Max; i++) {
-        if (((slDataFrom.value == "row") && (i == cbIndex - 1)) ||
-            (!(slDataFrom.value == "row") && (i == cbIndex))) {
+        if (((isSDFR) && (i == cbIndex - 1)) ||
+            (!(isSDFR) && (i == cbIndex))) {
             checkbox[i].checked = false;
             checkbox[i].style.display = 'none';
         } else {
@@ -689,7 +698,7 @@ function secondNext() {
 
 
     inNoteDataset.defaultValue = "nocomment";
-    if (slDataFrom.value == "row")
+    if (isSDFR)
         showTableChoiceData_SDFR(tableDatumSelected);
     else
         showTableChoiceData_SDFC(tableDatumSelected);
@@ -697,29 +706,29 @@ function secondNext() {
 
 function getNotesSelected(noteP) {
     tempNotes = [];
-    if (slDataFrom.value == "row") {
+    if (isSDFR) {
         for (var rowIndex = 1; rowIndex < tableData.length; rowIndex++) {
             let temp = tableData[rowIndex][noteP - 1];
             tempNotes.push(temp);
         }
     } else {
         let row = tableData[noteP];
-        for(var i = 0; i<row.length; i++){
-            if(i !== labelPoint-2){
+        for (var i = 0; i < row.length; i++) {
+            if (i !== labelPoint - 2) {
                 tempNotes.push(row[i]);
             }
         }
-        
-            
-            
-        
+
+
+
+
     }
     return tempNotes;
 }
 
 function getLabelsSelected(labelP) {
     let tempLabels = [];
-    if (slDataFrom.value == "row") {
+    if (isSDFR) {
         let temp = tableData[labelP - 1];
 
         for (var i = 0; i < temp.length; i++) {
@@ -736,7 +745,7 @@ function getLabelsSelected(labelP) {
                 }
             }
         } else {
-            for (var rowIndex = 1; rowIndex < tableData.length; rowIndex++) {
+            for (var rowIndex = 0; rowIndex < tableData.length; rowIndex++) {
                 let temp = tableData[rowIndex][labelP - 1];
 
                 if (arrCbData[rowIndex] === 'on') {
@@ -752,7 +761,7 @@ function getLabelsSelected(labelP) {
 
 function getTableDatumSelected(labelP) {
     tempDatum = [];
-    if (slDataFrom.value == "row") {
+    if (isSDFR) {
         for (var rowIndex = 0; rowIndex < tableData.length; rowIndex++) {
             if (rowIndex !== labelP - 1) {
                 rowData = [];
@@ -855,24 +864,22 @@ function createColumCb_SDFR(tr, checkPosition) {
 }
 
 function thirdNext() {
-    datasets = [];
+    finalData = [];
     if (isChartType) {
         notesList = getSelectedNotesList()
         let rows = getRowSelectedDatasets();
         rows.forEach(rowIndex => {
 
-            datasets.push(getDatasetsSelected(rowIndex));
+            finalData.push(getDatasetsSelected(rowIndex));
         });
 
     } else {
-        datasets.push(getDatasetsSelected(labelPoint));
+        finalData.push(getDatasetsSelected(labelPoint));
     }
-
-
-
 
     divThirdStep.style.display = 'none';
     divFourthStep.style.display = 'block';
+    btnSaveChart.style.display = 'block';
 
     setupChart();
 }
@@ -880,8 +887,7 @@ function thirdNext() {
 function getSelectedNotesList() {
     let temp = [];
     var checkbox = document.getElementsByName('cbDataset');
-console.log(notesList);
-console.log(checkbox);
+
 
     // Lặp qua từng checkbox để lấy giá trị
     for (var i = 0; i < checkbox.length; i++) {
@@ -909,7 +915,7 @@ function getRowSelectedDatasets() {
 function getDatasetsSelected(selectPoint) {
 
     let temp;
-    if (slDataFrom.value == "row") {
+    if (isSDFR) {
         for (var rowIndex = 0; rowIndex < tableDatumSelected.length; rowIndex++) {
             if (rowIndex == selectPoint) {
                 temp = tableDatumSelected[rowIndex];
@@ -947,7 +953,7 @@ function makeDataset(datum) {
         datum.forEach(data => {
             let note = notesList[noteIndex];
             let aSet;
-            if (slChartType.value === "line") {
+            if (chartType === "line") {
                 aSet = {
                     label: note,
                     borderColor: getColorsList(noteIndex),
@@ -967,9 +973,11 @@ function makeDataset(datum) {
             noteIndex++;
         });
     } else {
+        notesList = inNoteDataset.value;
+
         datum.forEach(data => {
             let aSet = {
-                label: inNoteDataset.value,
+                label: notesList,
                 backgroundColor: getColorsList(labelsList.length),
                 data: data
             }
@@ -987,7 +995,7 @@ function setupChart() {
         }
     };
 
-    let chartData = makeDataset(datasets);
+    let chartData = makeDataset(finalData);
 
     let data = {
         labels: labelsList,
@@ -995,13 +1003,13 @@ function setupChart() {
     }
 
 
+    
     let cvChart = document.getElementById("cvChart");
-    drawChart(cvChart, slChartType.value, data, options)
+    drawChart(cvChart, chartType, data, options)
 }
 
-let finalData;
 function drawChart(chartElement, type, Data, Option) {
-    finalData = {
+    let temp = {
         type: type,
         data: {
             labels: Data.labels,
@@ -1015,23 +1023,16 @@ function drawChart(chartElement, type, Data, Option) {
         }
     };
 
-    new Chart(chartElement, finalData);
+    new Chart(chartElement, temp);
 }
 
-function saveChart() {
-    let head = {
-        boxOwner: currentOwner,
-        boxName: currentBox,
-        tableID: currentTableID
-    }
-    socket.emit('createChart', {
-
-        body: makeDataset(datasets)
-    });
-}
 
 function resetDivChart() {
-
+    let divSteps = document.getElementsByClassName("classChartOfferStep");
+    for (var i = 0; i < divSteps.length; i++) {
+        divSteps[i].style.display = 'none';
+    }
+    document.getElementById("divChartsList").style.display = 'block';
 }
 
 function stepDisplay(currentDiv, stepDiv) {
@@ -1058,8 +1059,10 @@ function renew() {
 
 function selectDataFrom() {
     if (slDataFrom.value === 'row') {
+        isSDFR = true;
         selectDFR(tableData);
     } else {
+        isSDFR = false;
         selectDFC(tableData);
     }
 }
@@ -1215,3 +1218,117 @@ function addRbSelectList(tbName, rbName) {
     tbdy.appendChild(tr);
     tbName.appendChild(tbdy);
 }
+
+function saveChart() {
+    let head = {
+        boxOwner: currentOwner,
+        boxName: currentBox,
+        tableID: currentTableID,        
+        chartName: chartName
+    }
+    socket.emit('createChart', {
+        head: head,
+        chartType: chartType,
+        labelsList: labelsList,
+        notesList: notesList,
+        data: finalData
+
+    });
+}
+
+socket.on('createChartResult', result=>{
+    if(result){
+        alert("Chart saved");
+    }else{
+        alert("Error");
+    }
+});
+
+function addChartsList(chartsID, chartsName){
+    let chartsList = [];
+    for(var i=0; i< chartsID.length; i++){
+        chartsList.push({
+            chartID:chartsID[i],
+            chartName:chartsName[i]
+        });
+    }
+
+    showChartList(document.getElementById("tblChartsList"),chartsList);
+}
+
+let arrayChartTd = [];
+function showChartList(body, chartsList) {
+    body.innerHTML = '';
+    arrayChartTd = [];
+
+    let chartsNumber = chartsList?.length;
+    var tbl = document.createElement('table');
+    var tbdy = document.createElement('tbody');
+
+    for (var i = 0; i < chartsNumber; i++) {
+        var chartName = chartsList[i].chartName;
+        var tr = document.createElement('tr');
+
+        //create box name cell      ---------------------------------------  
+        var tdChartName = document.createElement('td');
+        arrayChartTd.push(tdChartName);
+
+        tdChartName.appendChild(document.createTextNode(chartName));
+        tdChartName.style.fontSize = '20px';
+        tdChartName.style.color = 'blue';
+        tdChartName.style.border = '0px solid red';
+        tdChartName.style.overflow = 'hidden';
+
+        getChartDetail(tdChartName, chartsList[i].chartID);
+
+        //add cell to row
+        tr.appendChild(tdChartName);
+        tbdy.appendChild(tr);
+
+    }
+
+    tbl.appendChild(tbdy);
+    body.appendChild(tbl);
+}
+
+
+function getChartDetail(tdChart, chartID) {
+
+    tdChart.addEventListener('click', clickEle);
+    function clickEle() {
+        arrayChartTd.forEach(td => {
+            td.style.color = 'blue';
+        });
+
+        tdChart.style.color = 'red';
+
+        let chartInfo = {
+            boxOwner: currentOwner,
+            boxName: currentBox,
+            chartID: chartID
+        }
+        
+        socket.emit('getChartDetail', chartInfo);
+        
+    }
+}
+
+socket.on('getChartDetailResult', result=>{
+    if(result.resultType){
+        chartType = result.chartType;
+        if(chartType === "bar" || chartType === "line"){
+            isChartType = true;
+        }else{
+            isChartType = false;
+        }
+        notesList = result.notesList;
+        labelsList = result.labelsList;
+        chartName = result.chartName;
+        finalData = result.data;
+
+        btnSaveChart.style.display = 'none';
+        divFourthStep.style.display = 'block';
+    
+        setupChart();
+    }
+});

@@ -141,20 +141,8 @@ function updateBoxInfo(tableInfo, tableID) {
                         if (pBox == null) {  //can't find boxName in chat list of boxName           
 
                         } else {//find out
-                            let tablesNameNew = pBox.tablesName;
-                            let tablesIDNew = pBox.tablesID;
-
-                            tablesNameNew[tablesNameNew.length] = tableName;
-                            tablesIDNew[tablesIDNew.length] = tableID;
-
-                            let updateQuery = {
-                                tablesName: tablesNameNew,
-                                tablesID: tablesIDNew,
-                                lastEdit: new Date()
-                            }
-
                             dbo.collection(defineVal.boxListsColection).findOneAndUpdate({ boxName: boxName },
-                                { $set: updateQuery }, function (err, res) {
+                                { $set: setupUpdateQuery(pBox) }, function (err, res) {
                                     if (err) reject(err);
                                     else {
                                         //console.log(res)
@@ -165,10 +153,25 @@ function updateBoxInfo(tableInfo, tableID) {
                         }
                     }
                 });
-
             }
         });
+
+
     });
+
+    function setupUpdateQuery(pBox) {
+        let tablesNameNew = pBox.tablesName;
+        let tablesIDNew = pBox.tablesID;
+
+        tablesNameNew[tablesNameNew.length] = tableName;
+        tablesIDNew[tablesIDNew.length] = tableID;
+
+        return {
+            tablesName: tablesNameNew,
+            tablesID: tablesIDNew,
+            lastEdit: new Date()
+        }
+    }
 }
 
 function insertTableToBox(tableInfo) {
@@ -186,6 +189,8 @@ function insertTableToBox(tableInfo) {
                 var newTable = {
                     tableName: tableName,
                     tableData: tableInfo.tableContent,
+                    chartsName: [],
+                    chartsID: [],
                     created: new Date(),
                     lastEdit: new Date()
                 }
@@ -230,15 +235,12 @@ function getBoxDetail(request) {
     });
 }
 
-var ObjectId = require('mongodb').ObjectId; 
-
-
-
+var ObjectId = require('mongodb').ObjectId;
 function getTableDetail(tableInfo) {
     let username = tableInfo.boxOwner;
     let boxName = tableInfo.boxName;
-    
-    let queryJson = {"_id": ObjectId(tableInfo.tableID)}      
+
+    let queryJson = { "_id": ObjectId(tableInfo.tableID) }
 
 
     return new Promise((resolve, reject) => {
@@ -262,7 +264,118 @@ function getTableDetail(tableInfo) {
     });
 }
 
+function insertNewChart(chartInfo) {
+    let username = chartInfo.head.boxOwner;
+    let boxName = chartInfo.head.boxName;
 
+    return new Promise((resolve, reject) => {
+        MongoClient.connect(defineVal.baseUrl, function (err, db) {
+            if (err)
+                reject(err);
+            else {
+                const dbName = defineVal.dbUser + username;
+                var dbo = db.db(dbName);
+                let chartName = chartInfo.head.chartName;
+                var newChart = {
+                    chartName: chartName,
+                    chartType: chartInfo.chartType,
+                    labelsList: chartInfo.labelsList,
+                    notesList: chartInfo.notesList,
+                    data: chartInfo.data,
+                    created: new Date(),
+                    lastEdit: new Date()
+                }
+                dbo.collection(defineVal.boxChartColection + boxName).insertOne(newChart, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    else {
+                        console.log(chartName + " was add!");
+
+                        resolve(res.insertedId);
+                        db.close();
+                    }
+                });
+            }
+        });
+    });
+}
+
+function updateTableInfo(tableInfo, chartID) {
+    let username = tableInfo.boxOwner;
+    let boxName = tableInfo.boxName;
+    let tableID = tableInfo.tableID;
+    let chartName = tableInfo.chartName;
+
+    let queryJson = { "_id": ObjectId(tableID) }
+
+    return new Promise((resolve, reject) => {
+        MongoClient.connect(defineVal.baseUrl, function (err, db) {
+            if (err) {
+                reject(err);
+            } else {
+                const dbName = defineVal.dbUser + username;
+                var dbo = db.db(dbName);
+                dbo.collection(defineVal.boxTablesColection + boxName).findOne(queryJson, function (err, table) {
+                    if (err) reject(err);
+                    else {
+                        dbo.collection(defineVal.boxTablesColection + boxName).findOneAndUpdate(queryJson,
+                            { $set: setupUpdateQuery(table) }, function (err, res) {
+                                if (err) reject(err);
+                                else {
+                                    //console.log(res)
+                                    resolve(res);
+                                    db.close();
+                                }
+                            });
+                    }
+                });
+            }
+        });
+    });
+
+
+    function setupUpdateQuery(table) {
+        let chartsNameNew = table.chartsName;
+        let chartsIDNew = table.chartsID;
+
+        chartsNameNew[chartsNameNew.length] = chartName;
+        chartsIDNew[chartsIDNew.length] = chartID;
+
+        return {
+            chartsName: chartsNameNew,
+            chartsID: chartsIDNew,
+            lastEdit: new Date()
+        }
+    }
+}
+
+function getChartDetail(chartInfo) {
+    let username = chartInfo.boxOwner;
+    let boxName = chartInfo.boxName;
+
+    let queryJson = { "_id": ObjectId(chartInfo.chartID) };
+
+    return new Promise((resolve, reject) => {
+        MongoClient.connect(defineVal.baseUrl, function (err, db) {
+            if (err)
+                reject(err);
+            else {
+                const dbName = defineVal.dbUser + username;
+                var dbo = db.db(dbName);
+                dbo.collection(defineVal.boxChartColection + boxName).findOne(queryJson, function (err, chart) {
+                    if (err) {
+                        throw err;
+                    }
+                    else {
+                        resolve(chart);
+                        db.close();
+                    }
+                });
+            }
+        });
+    });
+}
 
 
 
@@ -277,5 +390,8 @@ module.exports = {
     getBoxesList: getBoxesList,
     getBoxDetail: getBoxDetail,
     updateBoxInfo: updateBoxInfo,
-    getTableDetail: getTableDetail
+    getTableDetail: getTableDetail,
+    insertNewChart: insertNewChart,
+    updateTableInfo: updateTableInfo,
+    getChartDetail:getChartDetail
 }

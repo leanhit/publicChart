@@ -349,7 +349,6 @@ io.on('connection', (client) => {
       getBoxesListResult({ resultType: false });
     }).then((boxesList) => {
       if (boxesList === null) {
-        // console.log(boxesList);
         getBoxesListResult({ resultType: false });
       } else if (typeof (boxesList) === 'undefined') {
         getBoxesListResult({ resultType: false });
@@ -369,7 +368,6 @@ io.on('connection', (client) => {
     let boxObj = dbManage.getBoxDetail(request);
 
     boxObj.catch((err) => {
-      console.log(err)
       getBoxDetailResult({
         resultType: false,
         boxDetail: null
@@ -392,7 +390,6 @@ io.on('connection', (client) => {
             resultType: true,
             boxDetail: editBoxDetail(boxDetail)
           });
-          //console.log(result)
         }
       } else {
         getBoxDetailResult({
@@ -417,7 +414,6 @@ io.on('connection', (client) => {
         tableID: boxDetail.tablesID[i]
       }
       tablesList.push(tableNode);
-      //console.log(boxDetail,tableNode)
     }
 
     return {
@@ -431,28 +427,23 @@ io.on('connection', (client) => {
   }
 
   client.on('createNewTable', tableInfo => {
-    console.log(tableInfo);
     let boxOwner = tableInfo.head.boxOwner;
     if (boxOwner === client.username) {
-      console.log(tableInfo);
       //1.insert new table to box colection, return box id
       tableObj = dbManage.insertTableToBox(tableInfo);
       tableObj.catch(err => {
-        console.log(err);
         createTableResult(false);
       }).then(tableID => {
+        console.log(tableID)
         if (typeof (tableInfo) !== "undefined") {
           //2. inset information of this new box to box detail with the id
           let updateObj = dbManage.updateBoxInfo(tableInfo.head, tableID);
           updateObj.catch(err => {
-            console.log(err);
             createTableResult(false);
           }).then(() => {
             createTableResult(true);
           });
         }
-
-
       });
     }
   });
@@ -465,7 +456,6 @@ io.on('connection', (client) => {
 
     let tableObj = dbManage.getTableDetail(tableInfo);
     tableObj.catch(err => {
-      console.log(err);
       getTableDetailResult({
         resultType: false,
         resultInfo: null
@@ -479,20 +469,59 @@ io.on('connection', (client) => {
   });
 
   function getTableDetailResult(result) {
+    ///////console.log(result);
     client.emit('getTableDetailResult', result);
   }
 
-//===---------create chart------------
-client.on('createChart', chartInfo=>{
-  console.log(chartInfo)
-})
+  //===---------create chart------------
+  client.on('createChart', chartInfo => {
+    let boxOwner = chartInfo.head.boxOwner;
+    if (client.username === boxOwner) {
+      let chartObj = dbManage.insertNewChart(chartInfo);
+      chartObj.catch(err => {
 
+      }).then(chartID => {
+        console.log(chartID)
+        if (typeof (chartID) !== 'undefined') {
+          let update = dbManage.updateTableInfo(chartInfo.head, chartID);
+          update.catch(err => {
 
+          }).then(() => {
+            client.emit('createChartResult', true);
+          });
+        }
+      });
+    }
+  });
 
+  client.on('getChartDetail', chartInfo => {
+    let chartObj = dbManage.getChartDetail(chartInfo);
+    
+    chartObj.catch(err => {
+      console.log(err);
+      getChartDetailResult({
+        resultType: false,
+        resultInfo: null
+      });
+    }).then(chartDetail => {
+      getChartDetailResult({
+        resultType: true,
+        chartName: chartDetail.chartName,
+        chartType: chartDetail.chartType,
+        labelsList: chartDetail.labelsList,
+        notesList: chartDetail.notesList,
+        data: chartDetail.data,
+        created: chartDetail.created,
+        lastEdit: chartDetail.lastEdit
+      });
+    });
+  });
 
+  function getChartDetailResult(result) {
+    ///////console.log(result);
+    client.emit('getChartDetailResult', result);
 
-
-
+  }
 
 
 
